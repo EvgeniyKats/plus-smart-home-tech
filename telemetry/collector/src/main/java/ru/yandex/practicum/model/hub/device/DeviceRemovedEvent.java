@@ -1,27 +1,22 @@
 package ru.yandex.practicum.model.hub.device;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import ru.yandex.practicum.model.hub.BaseHubEvent;
 import ru.yandex.practicum.model.hub.HubEventType;
-
-import java.time.Instant;
 
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DeviceRemovedEvent {
+public class DeviceRemovedEvent extends BaseHubEvent {
     @NotBlank
     String id;
 
-    @NotBlank
-    String hubId;
-
-    Instant timestamp = Instant.now();
-
-    @NotNull
-    HubEventType type;
+    @Override
+    public HubEventType getType() {
+        return HubEventType.DEVICE_REMOVED;
+    }
 }

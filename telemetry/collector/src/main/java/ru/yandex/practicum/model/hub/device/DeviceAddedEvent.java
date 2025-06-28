@@ -6,25 +6,21 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import ru.yandex.practicum.model.hub.BaseHubEvent;
 import ru.yandex.practicum.model.hub.HubEventType;
-
-import java.time.Instant;
 
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DeviceAddedEvent {
+public class DeviceAddedEvent extends BaseHubEvent {
     @NotBlank
     String id;
-
-    @NotBlank
-    String hubId;
-
-    Instant timestamp = Instant.now();
 
     @NotNull
     DeviceType deviceType;
 
-    @NotNull
-    HubEventType type;
+    @Override
+    public HubEventType getType() {
+        return HubEventType.DEVICE_ADDED;
+    }
 }
