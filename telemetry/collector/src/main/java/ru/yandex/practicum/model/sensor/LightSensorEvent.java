@@ -9,12 +9,15 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SwitchBaseSensorEvent extends BaseSensorEvent {
+public class LightSensorEvent extends BaseSensorEvent {
     @NotNull
-    Boolean state;
+    Integer linkQuality;
+
+    @NotNull
+    Integer luminosity;
 
     @Override
     public SensorEventType getType() {
-        return SensorEventType.SWITCH_SENSOR_EVENT;
+        return SensorEventType.LIGHT_SENSOR_EVENT;
     }
 }

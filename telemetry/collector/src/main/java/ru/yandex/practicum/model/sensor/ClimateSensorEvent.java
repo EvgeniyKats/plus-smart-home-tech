@@ -9,18 +9,18 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MotionBaseSensorEvent extends BaseSensorEvent {
+public class ClimateSensorEvent extends BaseSensorEvent {
     @NotNull
-    Integer linkQuality;
+    Integer temperatureC;
 
     @NotNull
-    Boolean motion;
+    Integer humidity;
 
     @NotNull
-    Integer voltage;
+    Integer co2Level;
 
     @Override
     public SensorEventType getType() {
-        return SensorEventType.MOTION_SENSOR_EVENT;
+        return SensorEventType.CLIMATE_SENSOR_EVENT;
     }
 }
