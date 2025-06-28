@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.model.hub.BaseHubEvent;
 import ru.yandex.practicum.model.sensor.BaseSensorEvent;
 import ru.yandex.practicum.service.EventCollectorService;
-import ru.yandex.practicum.util.HubEventHandleFactory;
-import ru.yandex.practicum.util.SensorEventHandleFactory;
 
 @Slf4j
 @Validated
@@ -24,11 +22,28 @@ public class EventController {
 
     @PostMapping("/sensors")
     public void collectSensorEvent(@Valid @RequestBody BaseSensorEvent event) {
+        log.info("start POST /events/sensors ev.type={}, ev.hubId={}, ev.timestamp={}",
+                event.getType(),
+                event.getHubId(),
+                event.getTimestamp());
         eventCollectorService.collectSensorEvent(event);
+        log.info("end POST /events/sensors ev.type={}, ev.hubId={}, ev.timestamp={}",
+                event.getType(),
+                event.getHubId(),
+                event.getTimestamp());
     }
 
     @PostMapping("/hubs")
     public void collectHubEvent(@Valid @RequestBody BaseHubEvent event) {
+        log.info("start POST /events/hubs ev.type={}, ev.hubId={}, ev.timestamp={}",
+                event.getType(),
+                event.getHubId(),
+                event.getTimestamp());
+        log.info("start POST /events/hubs event.type={}", event.getType());
         eventCollectorService.collectHubEvent(event);
+        log.info("end POST /events/hubs ev.type={}, ev.hubId={}, ev.timestamp={}",
+                event.getType(),
+                event.getHubId(),
+                event.getTimestamp());
     }
 }
