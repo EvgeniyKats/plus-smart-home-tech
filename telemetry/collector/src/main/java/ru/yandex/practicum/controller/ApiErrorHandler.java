@@ -1,5 +1,6 @@
 package ru.yandex.practicum.controller;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,14 @@ import java.util.Arrays;
 @Slf4j
 @RestControllerAdvice
 public class ApiErrorHandler {
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleBadRequest(final ConstraintViolationException e) {
+        ApiError apiError = createApiError(e);
+        loggingApiError(apiError, Level.WARN);
+        return apiError;
+    }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiError handleException(Throwable e) {
