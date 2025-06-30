@@ -1,8 +1,5 @@
 package ru.yandex.practicum.service.sensor;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.avro.specific.SpecificRecordBase;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.config.KafkaTopicsNames;
 import ru.yandex.practicum.kafka.telemetry.event.ClimateSensorAvro;
@@ -12,7 +9,6 @@ import ru.yandex.practicum.model.sensor.ClimateSensorEvent;
 import ru.yandex.practicum.model.sensor.SensorEventType;
 import ru.yandex.practicum.service.kafka.KafkaEventProducer;
 
-@Slf4j
 @Component
 public class ClimateSensorEventHandler extends BaseSensorEventHandler<ClimateSensorAvro> {
     public ClimateSensorEventHandler(KafkaEventProducer kafkaEventProducer,
@@ -28,16 +24,8 @@ public class ClimateSensorEventHandler extends BaseSensorEventHandler<ClimateSen
 
     @Override
     public void handle(BaseSensorEvent event) {
-        if (isNotInstanceOf(event, ClimateSensorEvent.class)) {
-            throw new IllegalArgumentException(event.getClass() + " is not instance of ClimateSensorEvent.class");
-        }
-        log.trace("instance check confirm sensorId={}", event.getId());
-        SensorEventAvro avro = mapToAvroSensorEvent(event);
-        log.trace("map To avro confirm sensorId={}", event.getId());
-        ProducerRecord<String, SpecificRecordBase> record = createRecord(event, avro);
-        log.trace("record created confirm sensorId={}", event.getId());
-        kafkaEventProducer.send(record);
-        log.trace("record send confirm sensorId={}", event.getId());
+        validateEventType(event, ClimateSensorEvent.class);
+        super.handle(event);
     }
 
     @Override

@@ -24,7 +24,18 @@ public class KafkaEventProducer {
         this.producer = new KafkaProducer<>(config);
     }
 
-    public void send(ProducerRecord<String, SpecificRecordBase> record) {
+    public void send(ProducerSendParam param) {
+        if (!param.isValid()) {
+            throw new IllegalArgumentException("invalid ProducerSendParam=" + param);
+        }
+
+        ProducerRecord<String, SpecificRecordBase> record = new ProducerRecord<>(
+                param.getTopic(),
+                param.getPartition(),
+                param.getTimestamp(),
+                param.getKey(),
+                param.getValue());
+
         producer.send(record);
     }
 
