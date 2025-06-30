@@ -3,8 +3,10 @@ package ru.yandex.practicum.model.hub;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.model.hub.device.DeviceAddedEvent;
 import ru.yandex.practicum.model.hub.device.DeviceRemovedEvent;
 import ru.yandex.practicum.model.hub.scenario.ScenarioAddedEvent;
@@ -24,6 +26,7 @@ import java.time.Instant;
 })
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PROTECTED)
 public abstract class BaseHubEvent {
     @NotBlank
     String hubId;
