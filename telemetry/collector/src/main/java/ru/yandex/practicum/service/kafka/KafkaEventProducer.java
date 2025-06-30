@@ -13,7 +13,7 @@ import ru.yandex.practicum.kafka.serializer.GeneralAvroSerializer;
 import java.util.Properties;
 
 @Component
-public class KafkaEventProducer implements AutoCloseable {
+public class KafkaEventProducer {
     private final Producer<String, SpecificRecordBase> producer;
 
     private KafkaEventProducer() {
@@ -29,8 +29,7 @@ public class KafkaEventProducer implements AutoCloseable {
     }
 
     @PreDestroy
-    @Override
-    public void close() throws Exception {
+    private void close() {
         if (producer != null) {
             producer.flush();
             producer.close();
