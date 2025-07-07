@@ -2,6 +2,7 @@ package ru.yandex.practicum.service.sensor;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.config.KafkaTopicsNames;
+import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.LightSensorAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.model.sensor.BaseSensorEvent;
@@ -10,11 +11,12 @@ import ru.yandex.practicum.model.sensor.SensorEventType;
 import ru.yandex.practicum.service.kafka.KafkaEventProducer;
 
 @Component
-public class LightSensorEventHandler extends BaseSensorEventHandler<LightSensorAvro> {
+public class LightSensorEventHandler extends BaseSensorEventHandler {
     public LightSensorEventHandler(KafkaEventProducer kafkaEventProducer,
                                    KafkaTopicsNames kafkaTopicsNames,
-                                   SensorEventMapper sensorEventMapper) {
-        super(kafkaEventProducer, kafkaTopicsNames, sensorEventMapper);
+                                   SensorEventAvroMapper sensorEventAvroMapper,
+                                   SensorEventProtoMapper sensorEventProtoMapper) {
+        super(kafkaEventProducer, kafkaTopicsNames, sensorEventAvroMapper, sensorEventProtoMapper);
     }
 
     @Override
@@ -23,14 +25,14 @@ public class LightSensorEventHandler extends BaseSensorEventHandler<LightSensorA
     }
 
     @Override
-    public void handle(BaseSensorEvent event) {
-        validateEventType(event, LightSensorEvent.class);
-        super.handle(event);
+    protected SensorEventAvro mapSensorToAvro(BaseSensorEvent event) {
+        LightSensorAvro avro = sensorEventAvroMapper.mapToLightSensorAvro((LightSensorEvent) event);
+        return buildSensorEventAvro(event, avro);
     }
 
     @Override
-    protected SensorEventAvro mapToAvroSensorEvent(BaseSensorEvent event) {
-        LightSensorAvro avro = sensorEventMapper.mapToLightSensorAvro((LightSensorEvent) event);
-        return buildSensorEventAvro(event, avro);
+    protected BaseSensorEvent mapProtoToSensor(SensorEventProto eventProto) {
+        BaseSensorEvent event = sensorEventProtoMapper.mapToLightSensor(eventProto.getLightSensorEvent());
+        return sensorEventProtoMapper.mapBaseFields(event, eventProto);
     }
 }

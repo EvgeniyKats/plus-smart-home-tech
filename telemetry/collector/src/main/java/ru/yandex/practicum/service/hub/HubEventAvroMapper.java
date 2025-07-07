@@ -13,7 +13,7 @@ import ru.yandex.practicum.model.hub.scenario.ScenarioAddedEvent;
 import ru.yandex.practicum.model.hub.scenario.ScenarioRemovedEvent;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface HubEventMapper {
+public interface HubEventAvroMapper {
     @Mapping(source = "deviceType", target = "type")
     DeviceAddedEventAvro mapToDeviceAddedEventAvro(DeviceAddedEvent deviceAddedEvent);
 
