@@ -7,26 +7,32 @@ import org.apache.avro.specific.SpecificDatumWriter;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Serializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.util.Arrays;
 
 public class GeneralAvroSerializer implements Serializer<SpecificRecordBase> {
     private final EncoderFactory encoderFactory = EncoderFactory.get();
-    private BinaryEncoder binaryEncoder;
+    private static final Logger log = LoggerFactory.getLogger(GeneralAvroSerializer.class);
 
     @Override
     public byte[] serialize(String topic, SpecificRecordBase data) {
+        if (data == null) {
+            return null;
+        }
+
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            if (data != null) {
-                DatumWriter<SpecificRecordBase> datumWriter = new SpecificDatumWriter<>(data.getSchema());
-                binaryEncoder = encoderFactory.binaryEncoder(outputStream, binaryEncoder);
-                datumWriter.write(data, binaryEncoder);
-                binaryEncoder.flush();
-            }
+            DatumWriter<SpecificRecordBase> datumWriter = new SpecificDatumWriter<>(data.getSchema());
+            BinaryEncoder binaryEncoder = encoderFactory.binaryEncoder(outputStream, null);
+            datumWriter.write(data, binaryEncoder);
+            binaryEncoder.flush();
             return outputStream.toByteArray();
-        } catch (IOException e) {
-            throw new SerializationException("Serialization error, topic=" + topic, e);
+        } catch (Exception e) {
+            String msg = "Serialization error, topic=" + topic;
+            log.warn("msg={} e.stackTrace={}", msg, Arrays.asList(e.getStackTrace()));
+            throw new SerializationException(msg, e);
         }
     }
 }
