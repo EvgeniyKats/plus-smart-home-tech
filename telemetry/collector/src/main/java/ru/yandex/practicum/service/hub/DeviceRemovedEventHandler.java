@@ -2,6 +2,7 @@ package ru.yandex.practicum.service.hub;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.config.KafkaTopicsNames;
+import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.DeviceRemovedEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 import ru.yandex.practicum.model.hub.BaseHubEvent;
@@ -10,27 +11,28 @@ import ru.yandex.practicum.model.hub.device.DeviceRemovedEvent;
 import ru.yandex.practicum.service.kafka.KafkaEventProducer;
 
 @Component
-public class DeviceRemovedEventHandler extends BaseHubEventHandler<DeviceRemovedEventAvro> {
+public class DeviceRemovedEventHandler extends BaseHubEventHandler {
     public DeviceRemovedEventHandler(KafkaEventProducer kafkaEventProducer,
                                      KafkaTopicsNames topicsNames,
-                                     HubEventMapper hubEventMapper) {
-        super(kafkaEventProducer, topicsNames, hubEventMapper);
+                                     HubEventAvroMapper hubEventAvroMapper,
+                                     HubEventProtoMapper hubEventProtoMapper) {
+        super(kafkaEventProducer, topicsNames, hubEventAvroMapper, hubEventProtoMapper);
     }
 
     @Override
-    protected HubEventAvro mapToHubEventAvro(BaseHubEvent event) {
-        DeviceRemovedEventAvro avro = hubEventMapper.mapToDeviceRemovedEventAvro((DeviceRemovedEvent) event);
+    protected HubEventAvro mapHubToAvro(BaseHubEvent event) {
+        DeviceRemovedEventAvro avro = hubEventAvroMapper.mapToDeviceRemovedEventAvro((DeviceRemovedEvent) event);
         return buildHubEventAvro(event, avro);
+    }
+
+    @Override
+    protected BaseHubEvent mapProtoToHub(HubEventProto eventProto) {
+        BaseHubEvent event = hubEventProtoMapper.mapToDeviceRemovedEvent(eventProto.getDeviceRemoved());
+        return hubEventProtoMapper.mapBaseFields(event, eventProto);
     }
 
     @Override
     public HubEventType getHubEventType() {
         return HubEventType.DEVICE_REMOVED;
-    }
-
-    @Override
-    public void handle(BaseHubEvent event) {
-        validateEventType(event, DeviceRemovedEvent.class);
-        super.handle(event);
     }
 }

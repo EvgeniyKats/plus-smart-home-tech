@@ -14,7 +14,7 @@ import ru.yandex.practicum.model.sensor.SwitchSensorEvent;
 import ru.yandex.practicum.model.sensor.TemperatureSensorEvent;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface SensorEventMapper {
+public interface SensorEventAvroMapper {
     ClimateSensorAvro mapToClimateSensorAvro(ClimateSensorEvent climateSensorEvent);
 
     LightSensorAvro mapToLightSensorAvro(LightSensorEvent lightSensorEvent);

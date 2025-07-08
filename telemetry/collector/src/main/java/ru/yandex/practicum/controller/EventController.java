@@ -1,47 +1,66 @@
 package ru.yandex.practicum.controller;
 
-import jakarta.validation.Valid;
+import com.google.protobuf.Empty;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
+import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.model.hub.BaseHubEvent;
-import ru.yandex.practicum.model.sensor.BaseSensorEvent;
+import net.devh.boot.grpc.server.service.GrpcService;
+import ru.yandex.practicum.grpc.telemetry.collector.CollectorControllerGrpc;
+import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
+import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.service.EventCollectorService;
 
 @Slf4j
 @RequiredArgsConstructor
-@RestController
-@RequestMapping("/events")
-public class EventController {
+@GrpcService
+public class EventController extends CollectorControllerGrpc.CollectorControllerImplBase {
     private final EventCollectorService eventCollectorService;
 
-    @PostMapping("/sensors")
-    public void collectSensorEvent(@Valid @RequestBody BaseSensorEvent event) {
-        log.info("start POST /events/sensors ev.type={}, ev.hubId={}, ev.timestamp={}",
-                event.getType(),
-                event.getHubId(),
-                event.getTimestamp());
-        eventCollectorService.collectSensorEvent(event);
-        log.info("end POST /events/sensors ev.type={}, ev.hubId={}, ev.timestamp={}",
-                event.getType(),
-                event.getHubId(),
-                event.getTimestamp());
+    public void collectSensorEvent(SensorEventProto eventProto, StreamObserver<Empty> responseObserver) {
+        String eventForLog = String.format("ev.payload=%s, ev.hubId=%s, ev.timestamp=%d",
+                eventProto.getPayloadCase(),
+                eventProto.getHubId(),
+                eventProto.getTimestamp().getSeconds());
+
+        try {
+            log.info("start collectSensorEvent {}", eventForLog);
+            eventCollectorService.collectSensorEvent(eventProto);
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            log.warn("exception collectSensorEvent {}", eventForLog);
+            responseObserver.onError(new StatusRuntimeException(
+                    Status.INTERNAL
+                            .withDescription(e.getLocalizedMessage())
+                            .withCause(e)
+            ));
+        }
+
+        log.info("end collectSensorEvent {}", eventForLog);
     }
 
-    @PostMapping("/hubs")
-    public void collectHubEvent(@Valid @RequestBody BaseHubEvent event) {
-        log.info("start POST /events/hubs ev.type={}, ev.hubId={}, ev.timestamp={}",
-                event.getType(),
-                event.getHubId(),
-                event.getTimestamp());
-        log.info("start POST /events/hubs event.type={}", event.getType());
-        eventCollectorService.collectHubEvent(event);
-        log.info("end POST /events/hubs ev.type={}, ev.hubId={}, ev.timestamp={}",
-                event.getType(),
-                event.getHubId(),
-                event.getTimestamp());
+    public void collectHubEvent(HubEventProto eventProto, StreamObserver<Empty> responseObserver) {
+        String eventForLog = String.format("collectHubEvent ev.payload=%s, ev.hubId=%s, ev.timestamp=%d",
+                eventProto.getPayloadCase(),
+                eventProto.getHubId(),
+                eventProto.getTimestamp().getSeconds());
+
+        try {
+            log.warn("start collectHubEvent {}", eventForLog);
+            eventCollectorService.collectHubEvent(eventProto);
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            log.info("exception collectHubEvent {}", eventForLog);
+            responseObserver.onError(new StatusRuntimeException(
+                    Status.INTERNAL
+                            .withDescription(e.getLocalizedMessage())
+                            .withCause(e)
+            ));
+        }
+
+        log.info("end collectHubEvent {}", eventForLog);
     }
 }

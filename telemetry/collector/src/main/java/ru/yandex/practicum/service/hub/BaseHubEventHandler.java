@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
 import ru.yandex.practicum.config.KafkaTopicsNames;
+import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 import ru.yandex.practicum.model.hub.BaseHubEvent;
 import ru.yandex.practicum.service.HubEventHandler;
@@ -12,31 +13,27 @@ import ru.yandex.practicum.service.kafka.ProducerSendParam;
 
 @Slf4j
 @RequiredArgsConstructor
-public abstract class BaseHubEventHandler<T extends SpecificRecordBase> implements HubEventHandler {
-
-    protected abstract HubEventAvro mapToHubEventAvro(BaseHubEvent event);
+public abstract class BaseHubEventHandler implements HubEventHandler {
 
     protected final KafkaEventProducer kafkaEventProducer;
     protected final KafkaTopicsNames topicsNames;
-    protected final HubEventMapper hubEventMapper;
+    protected final HubEventAvroMapper hubEventAvroMapper;
+    protected final HubEventProtoMapper hubEventProtoMapper;
+
+    protected abstract HubEventAvro mapHubToAvro(BaseHubEvent event);
+
+    protected abstract BaseHubEvent mapProtoToHub(HubEventProto eventProto);
 
     @Override
-    public void handle(BaseHubEvent event) {
-        log.trace("instance check confirm hubId={}", event.getHubId());
-        HubEventAvro avro = mapToHubEventAvro(event);
+    public void handle(HubEventProto eventProto) {
+        BaseHubEvent event = mapProtoToHub(eventProto);
+        log.trace("map to event confirm hubId={}", event.getHubId());
+        HubEventAvro avro = mapHubToAvro(event);
         log.trace("map To avro confirm hubId={}", event.getHubId());
         ProducerSendParam param = createProducerSendParam(event, avro);
         log.trace("param created confirm hubId={}", event.getHubId());
         kafkaEventProducer.send(param);
         log.trace("record send confirm hubId={}", event.getHubId());
-    }
-
-    protected void validateEventType(BaseHubEvent event, Class<? extends BaseHubEvent> keyType) {
-        log.trace("start validate event={} keyType={}", event.getClass(), keyType);
-        if (!(keyType.isInstance(event))) {
-            throw new IllegalArgumentException(event.getClass() + " is not instance of " + keyType);
-        }
-        log.trace("success validate event={} keyType={}", event.getClass(), keyType);
     }
 
     protected ProducerSendParam createProducerSendParam(BaseHubEvent event, HubEventAvro avro) {
@@ -48,7 +45,7 @@ public abstract class BaseHubEventHandler<T extends SpecificRecordBase> implemen
                 .build();
     }
 
-    protected HubEventAvro buildHubEventAvro(BaseHubEvent event, T payloadAvro) {
+    protected HubEventAvro buildHubEventAvro(BaseHubEvent event, SpecificRecordBase payloadAvro) {
         return HubEventAvro.newBuilder()
                 .setTimestamp(event.getTimestamp())
                 .setHubId(event.getHubId())
