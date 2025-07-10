@@ -11,5 +11,5 @@ public interface SnapshotStorage<T, V> {
      * @param event - входное событие, с учётом которого обновляется состояние
      * @return - Optional.of(), если состояние было обновлено / Optional.empty(), если состояние не было обновлено
      */
-    Optional<T> updateState(V event);
+    Optional<T> updateSnapshotByEvent(V event);
 }

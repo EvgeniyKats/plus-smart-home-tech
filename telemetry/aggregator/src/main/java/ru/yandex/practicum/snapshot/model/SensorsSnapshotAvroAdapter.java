@@ -14,10 +14,6 @@ public class SensorsSnapshotAvroAdapter implements Snapshot<SensorsSnapshotAvro,
     // Состояние снапшота, key - SensorEventAvro.id, value - состояние
     private final Map<String, SensorStateAvro> state;
 
-    public SensorsSnapshotAvroAdapter() {
-        this(new SensorsSnapshotAvro());
-    }
-
     public SensorsSnapshotAvroAdapter(SensorsSnapshotAvro snapshot) {
         this.snapshot = snapshot;
         state = snapshot.getSensorsState();

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.snapshot.storage;
 
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 import ru.yandex.practicum.snapshot.model.SensorsSnapshotAvroAdapter;
@@ -12,6 +13,7 @@ import java.util.Optional;
 /**
  * Класс-хранилище in memory для снапшотов типа SensorsSnapshotAvro
  */
+@Component
 public class SnapshotStorageAvroInMemory implements SnapshotStorage<SensorsSnapshotAvro, SensorEventAvro> {
     // Мапа снапшотов, key - SensorEventAvro.hubId, value - снапшот
     private final Map<String, Snapshot<SensorsSnapshotAvro, SensorEventAvro>> snapshots;
@@ -21,14 +23,20 @@ public class SnapshotStorageAvroInMemory implements SnapshotStorage<SensorsSnaps
     }
 
     @Override
-    public Optional<SensorsSnapshotAvro> updateState(SensorEventAvro event) {
+    public Optional<SensorsSnapshotAvro> updateSnapshotByEvent(SensorEventAvro event) {
         // hubId - ключ к снапшоту
         String hubId = event.getHubId();
         Snapshot<SensorsSnapshotAvro, SensorEventAvro> snapshot = snapshots.get(hubId);
 
         // Если снапшота нет в мапе, создать его
         if (snapshot == null) {
-            snapshot = new SensorsSnapshotAvroAdapter();
+            SensorsSnapshotAvro snapshotAvro = SensorsSnapshotAvro.newBuilder()
+                    .setHubId(event.getHubId())
+                    .setTimestamp(event.getTimestamp())
+                    .setSensorsState(new HashMap<>())
+                    .build();
+
+            snapshot = new SensorsSnapshotAvroAdapter(snapshotAvro);
             snapshots.put(hubId, snapshot);
         }
 
