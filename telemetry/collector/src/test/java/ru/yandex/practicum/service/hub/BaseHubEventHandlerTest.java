@@ -7,7 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import ru.yandex.practicum.config.KafkaTopicsNames;
+import ru.yandex.practicum.config.KafkaProducerConfig;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 import ru.yandex.practicum.service.HubEventHandler;
@@ -33,7 +33,7 @@ public abstract class BaseHubEventHandlerTest {
             .build();
 
     protected final HubEventHandleFactory hubEventHandleFactory;
-    protected final KafkaTopicsNames kafkaTopicsNames;
+    protected final KafkaProducerConfig kafkaProducerConfig;
     protected final HubEventAvroMapper hubEventAvroMapper;
     protected final HubEventProtoMapper hubEventProtoMapper;
     protected final HubEventHandler handler;
@@ -83,7 +83,7 @@ public abstract class BaseHubEventHandlerTest {
 
     private void checkSuccessProducerSendParamBase(ProducerSendParam param) {
         assertEquals(hubId, param.getKey());
-        assertEquals(kafkaTopicsNames.getHubsTopic(), param.getTopic());
+        assertEquals(kafkaProducerConfig.getHubsTopic(), param.getTopic());
         /*
          Проверка временной метки, поскольку nano (в proto) < milli (в param), nano потеряется
          + nano теряется при setTimestamp() сгенерированных классов avro:

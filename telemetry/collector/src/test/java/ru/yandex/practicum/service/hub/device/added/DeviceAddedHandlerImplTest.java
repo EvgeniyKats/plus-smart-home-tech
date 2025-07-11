@@ -2,7 +2,7 @@ package ru.yandex.practicum.service.hub.device.added;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.config.KafkaTopicsNames;
+import ru.yandex.practicum.config.KafkaProducerConfig;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceAddedEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceTypeProto;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
@@ -15,11 +15,11 @@ import ru.yandex.practicum.util.HubEventHandleFactory;
 public class DeviceAddedHandlerImplTest extends DeviceAddedHandler {
     @Autowired
     public DeviceAddedHandlerImplTest(HubEventHandleFactory hubEventHandleFactory,
-                                      KafkaTopicsNames kafkaTopicsNames,
+                                      KafkaProducerConfig kafkaProducerConfig,
                                       HubEventAvroMapper hubEventAvroMapper,
                                       HubEventProtoMapper hubEventProtoMapper) {
         super(hubEventHandleFactory,
-                kafkaTopicsNames,
+                kafkaProducerConfig,
                 hubEventAvroMapper,
                 hubEventProtoMapper);
     }

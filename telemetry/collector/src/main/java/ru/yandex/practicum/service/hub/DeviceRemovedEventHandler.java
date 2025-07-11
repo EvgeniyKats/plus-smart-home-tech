@@ -1,7 +1,7 @@
 package ru.yandex.practicum.service.hub;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.config.KafkaTopicsNames;
+import ru.yandex.practicum.config.KafkaProducerConfig;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.DeviceRemovedEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
@@ -13,10 +13,10 @@ import ru.yandex.practicum.service.kafka.KafkaEventProducer;
 @Component
 public class DeviceRemovedEventHandler extends BaseHubEventHandler {
     public DeviceRemovedEventHandler(KafkaEventProducer kafkaEventProducer,
-                                     KafkaTopicsNames topicsNames,
+                                     KafkaProducerConfig kafkaProducerConfig,
                                      HubEventAvroMapper hubEventAvroMapper,
                                      HubEventProtoMapper hubEventProtoMapper) {
-        super(kafkaEventProducer, topicsNames, hubEventAvroMapper, hubEventProtoMapper);
+        super(kafkaEventProducer, kafkaProducerConfig, hubEventAvroMapper, hubEventProtoMapper);
     }
 
     @Override

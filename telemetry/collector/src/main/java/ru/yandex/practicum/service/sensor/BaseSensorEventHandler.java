@@ -3,7 +3,7 @@ package ru.yandex.practicum.service.sensor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
-import ru.yandex.practicum.config.KafkaTopicsNames;
+import ru.yandex.practicum.config.KafkaProducerConfig;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.model.sensor.BaseSensorEvent;
@@ -16,7 +16,7 @@ import ru.yandex.practicum.service.kafka.ProducerSendParam;
 public abstract class BaseSensorEventHandler implements SensorEventHandler {
 
     protected final KafkaEventProducer kafkaEventProducer;
-    protected final KafkaTopicsNames topicsNames;
+    protected final KafkaProducerConfig kafkaProducerConfig;
     protected final SensorEventAvroMapper sensorEventAvroMapper;
     protected final SensorEventProtoMapper sensorEventProtoMapper;
 
@@ -38,7 +38,7 @@ public abstract class BaseSensorEventHandler implements SensorEventHandler {
 
     protected ProducerSendParam createProducerSendParam(BaseSensorEvent event, SensorEventAvro avro) {
         return ProducerSendParam.builder()
-                .topic(topicsNames.getSensorsTopic())
+                .topic(kafkaProducerConfig.getSensorsTopic())
                 .timestamp(event.getTimestamp().toEpochMilli())
                 .key(event.getHubId())
                 .value(avro)

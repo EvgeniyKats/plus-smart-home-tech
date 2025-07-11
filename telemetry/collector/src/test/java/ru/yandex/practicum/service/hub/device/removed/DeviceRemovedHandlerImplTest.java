@@ -2,7 +2,7 @@ package ru.yandex.practicum.service.hub.device.removed;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.config.KafkaTopicsNames;
+import ru.yandex.practicum.config.KafkaProducerConfig;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceRemovedEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.service.hub.HubEventAvroMapper;
@@ -14,11 +14,11 @@ import ru.yandex.practicum.util.HubEventHandleFactory;
 public class DeviceRemovedHandlerImplTest extends DeviceRemovedHandler {
     @Autowired
     public DeviceRemovedHandlerImplTest(HubEventHandleFactory hubEventHandleFactory,
-                                        KafkaTopicsNames kafkaTopicsNames,
+                                        KafkaProducerConfig kafkaProducerConfig,
                                         HubEventAvroMapper hubEventAvroMapper,
                                         HubEventProtoMapper hubEventProtoMapper) {
         super(hubEventHandleFactory,
-                kafkaTopicsNames,
+                kafkaProducerConfig,
                 hubEventAvroMapper,
                 hubEventProtoMapper);
     }

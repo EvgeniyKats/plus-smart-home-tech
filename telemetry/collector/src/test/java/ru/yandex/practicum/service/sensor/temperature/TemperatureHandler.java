@@ -1,7 +1,7 @@
 package ru.yandex.practicum.service.sensor.temperature;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.yandex.practicum.config.KafkaTopicsNames;
+import ru.yandex.practicum.config.KafkaProducerConfig;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.TemperatureSensorProto;
 import ru.yandex.practicum.kafka.telemetry.event.TemperatureSensorAvro;
@@ -17,9 +17,9 @@ abstract class TemperatureHandler extends BaseSensorEventHandlerTest {
     protected TemperatureSensorProto sourceProto;
 
     @Autowired
-    public TemperatureHandler(SensorEventHandleFactory sensorEventHandleFactory, KafkaTopicsNames kafkaTopicsNames, SensorEventAvroMapper sensorEventAvroMapper, SensorEventProtoMapper sensorEventProtoMapper) {
+    public TemperatureHandler(SensorEventHandleFactory sensorEventHandleFactory, KafkaProducerConfig kafkaProducerConfig, SensorEventAvroMapper sensorEventAvroMapper, SensorEventProtoMapper sensorEventProtoMapper) {
         super(sensorEventHandleFactory,
-                kafkaTopicsNames,
+                kafkaProducerConfig,
                 sensorEventAvroMapper,
                 sensorEventProtoMapper,
                 sensorEventHandleFactory.getSensorEventHandlerByPayloadCase(SensorEventProto.PayloadCase.TEMPERATURE_SENSOR_EVENT));

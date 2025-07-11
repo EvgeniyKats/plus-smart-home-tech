@@ -2,7 +2,7 @@ package ru.yandex.practicum.service.hub.scenario.added;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.config.KafkaTopicsNames;
+import ru.yandex.practicum.config.KafkaProducerConfig;
 import ru.yandex.practicum.grpc.telemetry.event.ActionTypeProto;
 import ru.yandex.practicum.grpc.telemetry.event.ConditionOperationProto;
 import ru.yandex.practicum.grpc.telemetry.event.ConditionTypeProto;
@@ -19,11 +19,11 @@ import ru.yandex.practicum.util.HubEventHandleFactory;
 public class ScenarioAddedHandlerImplTest extends ScenarioAddedHandler {
     @Autowired
     public ScenarioAddedHandlerImplTest(HubEventHandleFactory hubEventHandleFactory,
-                                        KafkaTopicsNames kafkaTopicsNames,
+                                        KafkaProducerConfig kafkaProducerConfig,
                                         HubEventAvroMapper hubEventAvroMapper,
                                         HubEventProtoMapper hubEventProtoMapper) {
         super(hubEventHandleFactory,
-                kafkaTopicsNames,
+                kafkaProducerConfig,
                 hubEventAvroMapper,
                 hubEventProtoMapper);
     }

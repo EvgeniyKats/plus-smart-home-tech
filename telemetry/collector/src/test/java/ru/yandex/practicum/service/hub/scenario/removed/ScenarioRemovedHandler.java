@@ -1,7 +1,7 @@
 package ru.yandex.practicum.service.hub.scenario.removed;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.yandex.practicum.config.KafkaTopicsNames;
+import ru.yandex.practicum.config.KafkaProducerConfig;
 import ru.yandex.practicum.grpc.telemetry.event.ScenarioRemovedEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.ScenarioRemovedEventAvro;
@@ -18,11 +18,11 @@ public abstract class ScenarioRemovedHandler extends BaseHubEventHandlerTest {
 
     @Autowired
     public ScenarioRemovedHandler(HubEventHandleFactory hubEventHandleFactory,
-                                  KafkaTopicsNames kafkaTopicsNames,
+                                  KafkaProducerConfig kafkaProducerConfig,
                                   HubEventAvroMapper hubEventAvroMapper,
                                   HubEventProtoMapper hubEventProtoMapper) {
         super(hubEventHandleFactory,
-                kafkaTopicsNames,
+                kafkaProducerConfig,
                 hubEventAvroMapper,
                 hubEventProtoMapper,
                 hubEventHandleFactory.getHubEventHandlerByPayloadCase(HubEventProto.PayloadCase.SCENARIO_REMOVED));
