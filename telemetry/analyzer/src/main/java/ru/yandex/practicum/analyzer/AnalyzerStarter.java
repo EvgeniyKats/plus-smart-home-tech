@@ -3,8 +3,8 @@ package ru.yandex.practicum.analyzer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.analyzer.processor.hub.HubEventProcessor;
-import ru.yandex.practicum.analyzer.processor.snapshot.SnapshotProcessor;
+import ru.yandex.practicum.analyzer.service.hub.HubEventProcessor;
+import ru.yandex.practicum.analyzer.service.snapshot.SnapshotProcessor;
 
 /**
  * Запускает выполнение процессов

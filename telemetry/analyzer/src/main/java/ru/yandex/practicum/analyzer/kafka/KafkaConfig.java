@@ -35,7 +35,7 @@ public class KafkaConfig {
     @Getter
     @FieldDefaults(level = AccessLevel.PRIVATE)
     @AllArgsConstructor
-    public static abstract class BaseConsumerConfig {
+    public abstract static class BaseConsumerConfig {
         Properties properties;
         List<String> topics;
         Duration poolTimeout;
