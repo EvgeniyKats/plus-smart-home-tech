@@ -1,5 +1,6 @@
 package ru.yandex.practicum.analyzer.scenario.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,7 +26,13 @@ import java.io.Serializable;
 // JPA annotations
 @Embeddable
 public class ScenarioConditionId implements Serializable {
+
+    @Column(name = "scenario_id")
     Long scenarioId;
+
+    @Column(name = "sensor_id")
     String sensorId;
+
+    @Column(name = "condition_id")
     Long conditionId;
 }
