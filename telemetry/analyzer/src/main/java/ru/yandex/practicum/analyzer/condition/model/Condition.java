@@ -35,6 +35,6 @@ public class Condition {
     @Enumerated(value = EnumType.STRING)
     ConditionOperation operation;
 
-    @Column(name = "value")
+    @Column(name = "val")
     Integer value;
 }

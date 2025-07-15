@@ -31,6 +31,6 @@ public class Action {
     @Enumerated(value = EnumType.STRING)
     ActionType type;
 
-    @Column(name = "value")
+    @Column(name = "val")
     Integer value;
 }
