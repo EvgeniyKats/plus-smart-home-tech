@@ -1,5 +1,6 @@
 package ru.yandex.practicum.snapshot;
 
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -98,6 +99,7 @@ public class AggregationStarter implements CommandLineRunner {
         }
     }
 
+    @PreDestroy
     public void shutdown() {
         consumer.wakeup();
         running = false;
