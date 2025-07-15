@@ -45,9 +45,11 @@ public class Scenario {
     @Column(name = "name")
     String name;
 
+    @Builder.Default
     @OneToMany(mappedBy = "scenario", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<ScenarioCondition> scenarioConditions = new HashSet<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "scenario", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<ScenarioAction> scenarioActions = new HashSet<>();
 

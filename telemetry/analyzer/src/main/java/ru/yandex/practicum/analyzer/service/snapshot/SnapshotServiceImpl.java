@@ -1,7 +1,8 @@
 package ru.yandex.practicum.analyzer.service.snapshot;
 
-import lombok.RequiredArgsConstructor;
+import com.google.protobuf.Timestamp;
 import lombok.extern.slf4j.Slf4j;
+import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.analyzer.condition.model.Condition;
@@ -9,23 +10,35 @@ import ru.yandex.practicum.analyzer.condition.model.ConditionOperation;
 import ru.yandex.practicum.analyzer.condition.model.ConditionType;
 import ru.yandex.practicum.analyzer.scenario.ScenarioRepository;
 import ru.yandex.practicum.analyzer.scenario.model.Scenario;
+import ru.yandex.practicum.analyzer.scenario.model.ScenarioAction;
 import ru.yandex.practicum.analyzer.scenario.model.ScenarioCondition;
 import ru.yandex.practicum.analyzer.service.snapshot.condition.ConditionValueHandler;
 import ru.yandex.practicum.analyzer.util.ConditionValueHandlerFactory;
+import ru.yandex.practicum.grpc.telemetry.event.ActionTypeProto;
+import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
+import ru.yandex.practicum.grpc.telemetry.event.DeviceActionRequest;
+import ru.yandex.practicum.grpc.telemetry.hubrouter.HubRouterControllerGrpc.HubRouterControllerBlockingStub;
 import ru.yandex.practicum.kafka.telemetry.event.SensorStateAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
 public class SnapshotServiceImpl implements SnapshotService {
 
+    private final HubRouterControllerBlockingStub hubRouterClient;
     private final ScenarioRepository scenarioRepository;
     private final ConditionValueHandlerFactory conditionValueHandlerFactory;
+
+    public SnapshotServiceImpl(@GrpcClient("hub-router") HubRouterControllerBlockingStub hubRouterClient, ScenarioRepository scenarioRepository, ConditionValueHandlerFactory conditionValueHandlerFactory) {
+        this.hubRouterClient = hubRouterClient;
+        this.scenarioRepository = scenarioRepository;
+        this.conditionValueHandlerFactory = conditionValueHandlerFactory;
+    }
 
     @Transactional(readOnly = true) // Только чтение данных из БД
     public void handleSnapshot(SensorsSnapshotAvro snapshotAvro) {
@@ -40,9 +53,12 @@ public class SnapshotServiceImpl implements SnapshotService {
         // обход сценариев с проверкой условий
         for (Scenario scenario : scenarios) {
             boolean allConditionsMet = checkScenarioConditions(scenario.getScenarioConditions(), sensorStateMap);
-
             if (allConditionsMet) {
-                // TODO вызов метода сервиса hub router
+                for (ScenarioAction action : scenario.getScenarioActions()) {
+                    DeviceActionRequest request = buildRequest(scenario, action, snapshotAvro.getTimestamp());
+                    log.info("actionId={}, req fields={}", action.getId(), request.getAllFields());
+                    hubRouterClient.handleDeviceAction(request);
+                }
             }
         }
     }
@@ -80,6 +96,14 @@ public class SnapshotServiceImpl implements SnapshotService {
             return false;
         }
 
+        Integer compareValue = condition.getValue();
+
+        // Значение может быть null
+        if (compareValue == null) {
+            log.debug("compareValue=null");
+            return false;
+        }
+
         // Тип условия
         ConditionType type = condition.getType();
 
@@ -91,12 +115,32 @@ public class SnapshotServiceImpl implements SnapshotService {
 
         // Оператор сравнения и сравниваемое значение
         ConditionOperation operation = condition.getOperation();
-        Integer compareValue = condition.getValue();
 
         return switch (operation) {
             case EQUALS -> sensorValue.compareTo(compareValue) == 0;
             case GREATER_THAN -> sensorValue.compareTo(compareValue) > 0;
             case LOWER_THAN -> sensorValue.compareTo(compareValue) < 0;
         };
+    }
+
+    private DeviceActionRequest buildRequest(Scenario scenario, ScenarioAction action, Instant timestamp) {
+
+        DeviceActionProto.Builder builderAction = DeviceActionProto.newBuilder();
+
+        DeviceActionRequest.Builder builder = DeviceActionRequest.newBuilder()
+                .setHubId(scenario.getHubId())
+                .setScenarioName(scenario.getName())
+                .setAction(builderAction
+                        .setSensorId(action.getId().getSensorId())
+                        .setType(ActionTypeProto.valueOf(action.getAction().getType().name())))
+                .setTimestamp(Timestamp.newBuilder()
+                        .setSeconds(timestamp.getEpochSecond())
+                        .setNanos(timestamp.getNano()));
+
+        if (action.getAction().getValue() != null) {
+            builderAction.setValue(action.getAction().getValue());
+        }
+
+        return builder.build();
     }
 }
