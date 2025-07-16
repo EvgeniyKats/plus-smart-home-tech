@@ -43,7 +43,6 @@ public class HubEventProcessor implements Runnable {
         this.consumerConfig = kafkaConfig.getConsumerHubConfig();
         this.consumer = new KafkaConsumer<>(consumerConfig.getProperties());
         this.currentOffsets = new HashMap<>();
-        Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
     }
 
     @Override

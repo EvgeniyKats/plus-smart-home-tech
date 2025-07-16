@@ -47,7 +47,6 @@ public class AggregationStarter implements CommandLineRunner {
         this.kafkaConfig = kafkaConfig;
         this.producer = new KafkaProducer<>(kafkaConfig.getProducerConfig().getProperties());
         this.consumer = new KafkaConsumer<>(kafkaConfig.getConsumerConfig().getProperties());
-        Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
     }
 
     /**

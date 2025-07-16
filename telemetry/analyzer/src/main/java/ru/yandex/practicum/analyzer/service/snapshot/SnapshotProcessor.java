@@ -36,7 +36,6 @@ public class SnapshotProcessor implements Runnable {
         this.consumerConfig = kafkaConfig.getConsumerSnapshotConfig();
         this.consumer = new KafkaConsumer<>(consumerConfig.getProperties());
         this.currentOffsets = new HashMap<>();
-        Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
     }
 
     @Override
