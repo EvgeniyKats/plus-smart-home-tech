@@ -15,7 +15,7 @@ import ru.yandex.practicum.service.EventCollectorService;
 @Slf4j
 @RequiredArgsConstructor
 @GrpcService
-public class EventController extends CollectorControllerGrpc.CollectorControllerImplBase {
+public class CollectorController extends CollectorControllerGrpc.CollectorControllerImplBase {
     private final EventCollectorService eventCollectorService;
 
     public void collectSensorEvent(SensorEventProto eventProto, StreamObserver<Empty> responseObserver) {

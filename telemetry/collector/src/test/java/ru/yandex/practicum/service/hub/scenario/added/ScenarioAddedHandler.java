@@ -1,7 +1,7 @@
 package ru.yandex.practicum.service.hub.scenario.added;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.yandex.practicum.config.KafkaTopicsNames;
+import ru.yandex.practicum.config.KafkaProducerConfig;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
 import ru.yandex.practicum.grpc.telemetry.event.ScenarioAddedEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
@@ -24,11 +24,11 @@ public abstract class ScenarioAddedHandler extends BaseHubEventHandlerTest {
 
     @Autowired
     public ScenarioAddedHandler(HubEventHandleFactory hubEventHandleFactory,
-                                KafkaTopicsNames kafkaTopicsNames,
+                                KafkaProducerConfig kafkaProducerConfig,
                                 HubEventAvroMapper hubEventAvroMapper,
                                 HubEventProtoMapper hubEventProtoMapper) {
         super(hubEventHandleFactory,
-                kafkaTopicsNames,
+                kafkaProducerConfig,
                 hubEventAvroMapper,
                 hubEventProtoMapper,
                 hubEventHandleFactory.getHubEventHandlerByPayloadCase(HubEventProto.PayloadCase.SCENARIO_ADDED));

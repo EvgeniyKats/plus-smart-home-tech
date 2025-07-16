@@ -1,6 +1,6 @@
 package ru.yandex.practicum.snapshot.storage;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 import ru.yandex.practicum.snapshot.model.SensorsSnapshotAvroAdapter;
@@ -13,7 +13,7 @@ import java.util.Optional;
 /**
  * Класс-хранилище in memory для снапшотов типа SensorsSnapshotAvro
  */
-@Component
+@Repository
 public class SnapshotStorageAvroInMemory implements SnapshotStorage<SensorsSnapshotAvro, SensorEventAvro> {
     // Мапа снапшотов, key - SensorEventAvro.hubId, value - снапшот
     private final Map<String, Snapshot<SensorsSnapshotAvro, SensorEventAvro>> snapshots;

@@ -1,7 +1,7 @@
 package ru.yandex.practicum.service.sensor.motion;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.yandex.practicum.config.KafkaTopicsNames;
+import ru.yandex.practicum.config.KafkaProducerConfig;
 import ru.yandex.practicum.grpc.telemetry.event.MotionSensorProto;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.MotionSensorAvro;
@@ -17,9 +17,9 @@ abstract class MotionHandler extends BaseSensorEventHandlerTest {
     protected MotionSensorProto sourceProto;
 
     @Autowired
-    public MotionHandler(SensorEventHandleFactory sensorEventHandleFactory, KafkaTopicsNames kafkaTopicsNames, SensorEventAvroMapper sensorEventAvroMapper, SensorEventProtoMapper sensorEventProtoMapper) {
+    public MotionHandler(SensorEventHandleFactory sensorEventHandleFactory, KafkaProducerConfig kafkaProducerConfig, SensorEventAvroMapper sensorEventAvroMapper, SensorEventProtoMapper sensorEventProtoMapper) {
         super(sensorEventHandleFactory,
-                kafkaTopicsNames,
+                kafkaProducerConfig,
                 sensorEventAvroMapper,
                 sensorEventProtoMapper,
                 sensorEventHandleFactory.getSensorEventHandlerByPayloadCase(SensorEventProto.PayloadCase.MOTION_SENSOR_EVENT));

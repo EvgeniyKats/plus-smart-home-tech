@@ -1,7 +1,7 @@
 package ru.yandex.practicum.service.sensor.switches;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.yandex.practicum.config.KafkaTopicsNames;
+import ru.yandex.practicum.config.KafkaProducerConfig;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.SwitchSensorProto;
 import ru.yandex.practicum.kafka.telemetry.event.SwitchSensorAvro;
@@ -17,9 +17,9 @@ abstract class SwitchHandler extends BaseSensorEventHandlerTest {
     protected SwitchSensorProto sourceProto;
 
     @Autowired
-    public SwitchHandler(SensorEventHandleFactory sensorEventHandleFactory, KafkaTopicsNames kafkaTopicsNames, SensorEventAvroMapper sensorEventAvroMapper, SensorEventProtoMapper sensorEventProtoMapper) {
+    public SwitchHandler(SensorEventHandleFactory sensorEventHandleFactory, KafkaProducerConfig kafkaProducerConfig, SensorEventAvroMapper sensorEventAvroMapper, SensorEventProtoMapper sensorEventProtoMapper) {
         super(sensorEventHandleFactory,
-                kafkaTopicsNames,
+                kafkaProducerConfig,
                 sensorEventAvroMapper,
                 sensorEventProtoMapper,
                 sensorEventHandleFactory.getSensorEventHandlerByPayloadCase(SensorEventProto.PayloadCase.SWITCH_SENSOR_EVENT));

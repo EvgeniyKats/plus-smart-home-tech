@@ -13,7 +13,7 @@ import java.util.Properties;
 @ConfigurationProperties(prefix = "aggregator.kafka")
 @AllArgsConstructor
 @Getter
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class KafkaConfig {
     ConsumerConfig consumerConfig;
     ProducerConfig producerConfig;

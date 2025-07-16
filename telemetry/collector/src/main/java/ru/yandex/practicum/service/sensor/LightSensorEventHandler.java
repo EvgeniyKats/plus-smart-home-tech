@@ -1,7 +1,7 @@
 package ru.yandex.practicum.service.sensor;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.config.KafkaTopicsNames;
+import ru.yandex.practicum.config.KafkaProducerConfig;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.LightSensorAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
@@ -13,10 +13,10 @@ import ru.yandex.practicum.service.kafka.KafkaEventProducer;
 @Component
 public class LightSensorEventHandler extends BaseSensorEventHandler {
     public LightSensorEventHandler(KafkaEventProducer kafkaEventProducer,
-                                   KafkaTopicsNames kafkaTopicsNames,
+                                   KafkaProducerConfig kafkaProducerConfig,
                                    SensorEventAvroMapper sensorEventAvroMapper,
                                    SensorEventProtoMapper sensorEventProtoMapper) {
-        super(kafkaEventProducer, kafkaTopicsNames, sensorEventAvroMapper, sensorEventProtoMapper);
+        super(kafkaEventProducer, kafkaProducerConfig, sensorEventAvroMapper, sensorEventProtoMapper);
     }
 
     @Override

@@ -2,7 +2,7 @@ package ru.yandex.practicum.service.sensor.light;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.config.KafkaTopicsNames;
+import ru.yandex.practicum.config.KafkaProducerConfig;
 import ru.yandex.practicum.grpc.telemetry.event.LightSensorProto;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.service.sensor.SensorEventAvroMapper;
@@ -14,10 +14,10 @@ import ru.yandex.practicum.util.SensorEventHandleFactory;
 public class LightHandlerImplTest extends LightHandler {
     @Autowired
     public LightHandlerImplTest(SensorEventHandleFactory sensorEventHandleFactory,
-                                KafkaTopicsNames kafkaTopicsNames,
+                                KafkaProducerConfig kafkaProducerConfig,
                                 SensorEventAvroMapper sensorEventAvroMapper,
                                 SensorEventProtoMapper sensorEventProtoMapper) {
-        super(sensorEventHandleFactory, kafkaTopicsNames, sensorEventAvroMapper, sensorEventProtoMapper);
+        super(sensorEventHandleFactory, kafkaProducerConfig, sensorEventAvroMapper, sensorEventProtoMapper);
     }
 
     @Override

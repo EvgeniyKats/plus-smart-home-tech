@@ -1,5 +1,6 @@
 package ru.yandex.practicum.snapshot;
 
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -16,8 +17,8 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 import ru.yandex.practicum.snapshot.kafka.KafkaConfig;
-import ru.yandex.practicum.snapshot.storage.SnapshotStorage;
 import ru.yandex.practicum.snapshot.kafka.ProducerRecordBuilder;
+import ru.yandex.practicum.snapshot.storage.SnapshotStorage;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,12 +39,15 @@ public class AggregationStarter implements CommandLineRunner {
     private final Producer<String, SpecificRecordBase> producer;
     private final KafkaConfig kafkaConfig;
 
+    private volatile boolean running = true;
+
     public AggregationStarter(SnapshotStorage<SensorsSnapshotAvro, SensorEventAvro> storage, KafkaConfig kafkaConfig) {
         this.storage = storage;
         this.currentOffsets = new HashMap<>();
         this.kafkaConfig = kafkaConfig;
         this.producer = new KafkaProducer<>(kafkaConfig.getProducerConfig().getProperties());
         this.consumer = new KafkaConsumer<>(kafkaConfig.getConsumerConfig().getProperties());
+        Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
     }
 
     /**
@@ -57,7 +61,7 @@ public class AggregationStarter implements CommandLineRunner {
             consumer.subscribe(kafkaConfig.getConsumerConfig().getTopics());
 
             // Цикл обработки событий
-            while (!Thread.currentThread().isInterrupted()) {
+            while (running) {
                 ConsumerRecords<String, SensorEventAvro> records =
                         consumer.poll(kafkaConfig.getConsumerConfig().getPoolTimeout());
                 int count = 0;
@@ -71,9 +75,11 @@ public class AggregationStarter implements CommandLineRunner {
                 // at-least-once для наибольшего сообщения, асинхронно, синхронная фиксация в блоке finally
                 consumer.commitAsync();
             }
+            log.info("Выполнение цикла было остановлено вручную");
         } catch (WakeupException e) {
             // лоигрование и закрытие консьюмера и продюсера в блоке finally
-            log.warn("Возник WakeupException, msg={}, stackTrace={}",
+            log.warn("Возник WakeupException, running={}, msg={}, stackTrace={}",
+                    running,
                     e.getMessage(),
                     Arrays.toString(e.getStackTrace()));
         } catch (Exception e) {
@@ -91,6 +97,12 @@ public class AggregationStarter implements CommandLineRunner {
                 producer.close();
             }
         }
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        consumer.wakeup();
+        running = false;
     }
 
     private void manageOffsets(ConsumerRecord<String, SensorEventAvro> record, int count) {

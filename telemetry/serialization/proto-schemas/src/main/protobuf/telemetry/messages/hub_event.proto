@@ -96,3 +96,11 @@ message ScenarioAddedEventProto {
   repeated ScenarioConditionProto conditions = 2; // Список условий, при выполнении которых активируется сценарий.
   repeated DeviceActionProto actions = 3;         // Список действий, выполняемых при активации сценария.
 }
+
+// Сообщение о действии над устройством
+message DeviceActionRequest {
+  string hub_id = 1;                          // Уникальный идентификатор хаба, который получит действие.
+  string scenario_name = 2;                   // Имя сценария в рамках которого выполняется действие
+  DeviceActionProto action = 3;               // Действие
+  google.protobuf.Timestamp timestamp = 4;    // Временная метка действия.
+}
