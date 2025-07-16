@@ -40,9 +40,10 @@ public class SnapshotServiceImpl implements SnapshotService {
         this.conditionValueHandlerFactory = conditionValueHandlerFactory;
     }
 
-    @Transactional(readOnly = true) // Только чтение данных из БД
+    @Transactional(readOnly = true)
     public void handleSnapshot(SensorsSnapshotAvro snapshotAvro) {
         String hubId = snapshotAvro.getHubId();
+        log.info("start handle snapshot hubId={}", hubId);
 
         // Сценарии, связанные с хабом
         List<Scenario> scenarios = scenarioRepository.findByHubId(hubId);
@@ -52,11 +53,13 @@ public class SnapshotServiceImpl implements SnapshotService {
 
         // обход сценариев с проверкой условий
         for (Scenario scenario : scenarios) {
+            log.trace("start handle hubId={}, scenarioId={}", scenario.getHubId(), scenario.getId());
             boolean allConditionsMet = checkScenarioConditions(scenario.getScenarioConditions(), sensorStateMap);
+            log.debug("allConditionsMet={}", allConditionsMet);
             if (allConditionsMet) {
                 for (ScenarioAction action : scenario.getScenarioActions()) {
                     DeviceActionRequest request = buildRequest(scenario, action, snapshotAvro.getTimestamp());
-                    log.info("actionId={}, req fields={}", action.getId(), request.getAllFields());
+                    log.debug("actionId={}, req fields={}", action.getId(), request.getAllFields());
                     try {
                         hubRouterClient.handleDeviceAction(request);
                     } catch (Exception e) {
@@ -96,11 +99,16 @@ public class SnapshotServiceImpl implements SnapshotService {
      */
     private boolean isConditionMet(Condition condition, SensorStateAvro sensorState) {
         // Если состояние не найдено в снапшоте, условие не выполняется
-        if (sensorState == null) {
+
+        boolean hasState = sensorState != null;
+        log.debug("hasState={}", hasState);
+
+        if (!hasState) {
             return false;
         }
 
         Integer compareValue = condition.getValue();
+        log.debug("compareValue={}", compareValue);
 
         // Значение может быть null
         if (compareValue == null) {
@@ -116,6 +124,7 @@ public class SnapshotServiceImpl implements SnapshotService {
 
         // Получаем конкретное значение из состояния снапшота
         Integer sensorValue = handler.handleValue(sensorState.getData());
+        log.debug("sensorValue={}", sensorValue);
 
         // Оператор сравнения и сравниваемое значение
         ConditionOperation operation = condition.getOperation();
@@ -127,6 +136,9 @@ public class SnapshotServiceImpl implements SnapshotService {
         };
     }
 
+    /**
+     * Создаёт DeviceActionRequest, .setValue() обрабатывает возможный null в action.getAction().getValue()
+     */
     private DeviceActionRequest buildRequest(Scenario scenario, ScenarioAction action, Instant timestamp) {
 
         DeviceActionProto.Builder builderAction = DeviceActionProto.newBuilder();
@@ -141,7 +153,9 @@ public class SnapshotServiceImpl implements SnapshotService {
                         .setSeconds(timestamp.getEpochSecond())
                         .setNanos(timestamp.getNano()));
 
-        if (action.getAction().getValue() != null) {
+        boolean actionHasValue = action.getAction().getValue() != null;
+        log.debug("actionHasValue={}", actionHasValue);
+        if (actionHasValue) {
             builderAction.setValue(action.getAction().getValue());
         }
 
