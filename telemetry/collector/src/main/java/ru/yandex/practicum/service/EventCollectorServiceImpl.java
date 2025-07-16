@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.model.hub.BaseHubEvent;
-import ru.yandex.practicum.model.sensor.BaseSensorEvent;
+import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
+import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.util.HubEventHandleFactory;
 import ru.yandex.practicum.util.SensorEventHandleFactory;
 
@@ -17,20 +17,20 @@ public class EventCollectorServiceImpl implements EventCollectorService {
     private final HubEventHandleFactory hubEventHandleFactory;
 
     @Override
-    public void collectHubEvent(BaseHubEvent event) {
-        log.info("collect hub: ev.type={}, ev.hubId={}, ev.timestamp={}",
-                event.getType(),
+    public void collectHubEvent(HubEventProto event) {
+        log.info("collect hub: ev.payload={}, ev.hubId={}, ev.timestamp={}",
+                event.getPayloadCase(),
                 event.getHubId(),
                 event.getTimestamp());
-        hubEventHandleFactory.getHubEventHandlerByType(event.getType()).handle(event);
+        hubEventHandleFactory.getHubEventHandlerByPayloadCase(event.getPayloadCase()).handle(event);
     }
 
     @Override
-    public void collectSensorEvent(BaseSensorEvent event) {
-        log.info("collect sensor: ev.type={}, ev.hubId={}, ev.timestamp={}",
-                event.getType(),
+    public void collectSensorEvent(SensorEventProto event) {
+        log.info("collect sensor: ev.payload={}, ev.hubId={}, ev.timestamp={}",
+                event.getPayloadCase(),
                 event.getHubId(),
                 event.getTimestamp());
-        sensorEventHandleFactory.getSensorEventHandlerByType(event.getType()).handle(event);
+        sensorEventHandleFactory.getSensorEventHandlerByPayloadCase(event.getPayloadCase()).handle(event);
     }
 }
