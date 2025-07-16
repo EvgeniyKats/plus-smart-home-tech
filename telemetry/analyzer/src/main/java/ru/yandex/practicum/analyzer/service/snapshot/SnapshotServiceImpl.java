@@ -57,7 +57,11 @@ public class SnapshotServiceImpl implements SnapshotService {
                 for (ScenarioAction action : scenario.getScenarioActions()) {
                     DeviceActionRequest request = buildRequest(scenario, action, snapshotAvro.getTimestamp());
                     log.info("actionId={}, req fields={}", action.getId(), request.getAllFields());
-                    hubRouterClient.handleDeviceAction(request);
+                    try {
+                        hubRouterClient.handleDeviceAction(request);
+                    } catch (Exception e) {
+                        log.error("Ошибка при обработке hubRouterClient", e);
+                    }
                 }
             }
         }

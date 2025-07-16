@@ -16,7 +16,7 @@ public class AnalyzerStarter implements CommandLineRunner {
     private final SnapshotProcessor snapshotProcessor;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         // Создание потока для обработки hub event
         Thread hubEventThread = new Thread(hubEventProcessor);
         hubEventThread.setName("HubEventThread");
@@ -26,9 +26,5 @@ public class AnalyzerStarter implements CommandLineRunner {
         Thread snapshotThread = new Thread(snapshotProcessor);
         snapshotThread.setName("SnapshotThread");
         snapshotThread.start();
-
-        // Блокировка до завершения работы потоков
-        hubEventThread.join();
-        snapshotThread.join();
     }
 }
