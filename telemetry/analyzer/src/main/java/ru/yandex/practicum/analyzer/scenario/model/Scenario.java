@@ -8,7 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,10 +28,7 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 // JPA annotations
 @Entity
-@Table(name = "scenarios",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"hub_id", "name"}) // Уникальная комбинация полей
-        })
+@Table(name = "scenarios")
 public class Scenario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
