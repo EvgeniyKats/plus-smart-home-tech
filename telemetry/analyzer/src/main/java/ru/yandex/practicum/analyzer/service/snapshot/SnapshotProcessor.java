@@ -16,10 +16,10 @@ import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.OptionalLong;
 
 /**
  * Запускает цикл опроса и обработки снапшотов
+ * Повторная обработка снапшотов крайне нежелательна и должна быть сведена к минимуму.
  */
 @Slf4j
 @Component
@@ -46,18 +46,13 @@ public class SnapshotProcessor implements Runnable {
 
             // Цикл обработки событий
             while (running) {
-                ConsumerRecords<String, SensorsSnapshotAvro> records =
-                        consumer.poll(consumerConfig.getPoolTimeout());
-                int count = 0;
+                ConsumerRecords<String, SensorsSnapshotAvro> records = consumer.poll(consumerConfig.getPoolTimeout());
+                // at-most-once позволяет избежать повторной обработки
+                consumer.commitSync();
                 for (ConsumerRecord<String, SensorsSnapshotAvro> record : records) {
                     // обрабатываем очередную запись
                     handleRecord(record);
-                    // фиксируем оффсеты обработанных записей, если нужно
-                    manageOffsets(record, count);
-                    count++;
                 }
-                // at-least-once для наибольшего сообщения, асинхронно, синхронная фиксация в блоке finally
-                consumer.commitAsync();
             }
             log.info("Выполнение цикла было остановлено вручную");
         } catch (WakeupException e) {
@@ -69,13 +64,8 @@ public class SnapshotProcessor implements Runnable {
         } catch (Exception e) {
             log.error("Ошибка во время обработки событий от датчиков", e);
         } finally {
-            try {
-                // фиксируем синхронно последний обработанный оффсет для гарантий at-least-once
-                consumer.commitSync();
-            } finally {
-                log.info("Закрываем консьюмер");
-                consumer.close();
-            }
+            log.info("Закрываем консьюмер");
+            consumer.close();
         }
     }
 
@@ -83,29 +73,6 @@ public class SnapshotProcessor implements Runnable {
     public void shutdown() {
         consumer.wakeup();
         running = false;
-    }
-
-    private void manageOffsets(ConsumerRecord<String, SensorsSnapshotAvro> record, int count) {
-        // обновляем текущий оффсет для топика-партиции
-        currentOffsets.put(
-                new TopicPartition(record.topic(), record.partition()),
-                new OffsetAndMetadata(record.offset() + 1));
-
-        if (count % 10 == 0) {
-            log.debug("count={}", count);
-            OptionalLong maxOptional = currentOffsets.values().stream()
-                    .mapToLong(OffsetAndMetadata::offset)
-                    .max();
-            maxOptional.ifPresent(max -> log.debug("Фиксация оффсетов max={}", max));
-
-            consumer.commitAsync(currentOffsets, (offsets, exception) -> {
-                if (exception == null) {
-                    log.debug("Успешная фиксация оффсетов: {}", offsets);
-                } else {
-                    log.error("Ошибка во время фиксации оффсетов: {}", offsets, exception);
-                }
-            });
-        }
     }
 
     private void handleRecord(ConsumerRecord<String, SensorsSnapshotAvro> record) {
