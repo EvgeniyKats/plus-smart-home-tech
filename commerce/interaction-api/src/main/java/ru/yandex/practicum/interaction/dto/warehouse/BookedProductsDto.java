@@ -1,0 +1,26 @@
+package ru.yandex.practicum.interaction.dto.warehouse;
+
+import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
+
+/**
+ * Общие сведения о зарезервированных товарах по корзине.
+ */
+
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class BookedProductsDto {
+    // Общий вес доставки
+    @NotNull
+    Double deliveryWeight;
+
+    // Общий объём доставки
+    @NotNull
+    Double deliveryVolume;
+
+    // Есть ли хрупкие вещи в доставке
+    @NotNull
+    Boolean fragile;
+}
