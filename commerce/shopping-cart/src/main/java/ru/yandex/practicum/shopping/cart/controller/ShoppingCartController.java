@@ -2,6 +2,7 @@ package ru.yandex.practicum.shopping.cart.controller;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.interaction.dto.shopping.cart.ShoppingCartDto;
+import ru.yandex.practicum.shopping.cart.service.ShoppingCartService;
 
 import java.util.List;
 import java.util.Map;
@@ -25,29 +27,34 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/shopping-cart")
 public class ShoppingCartController {
+    private final ShoppingCartService shoppingCartService;
+
     // Получить актуальную корзину для авторизованного пользователя.
     @GetMapping
     public ShoppingCartDto getShoppingCart(@RequestParam String username) {
         log.info("start получить корзину username={}", username);
-        // TODO реализовать
-        return null;
+        ShoppingCartDto result = shoppingCartService.getShoppingCart(username);
+        log.info("success получить корзину username={}, result={}", username, result);
+        return result;
     }
 
     // Добавить товар в корзину
     @PutMapping
     public ShoppingCartDto addProductsToShoppingCart(
-            @RequestBody @NotEmpty Map<UUID, @NotNull Integer> products, // Отображение идентификатора товара на отобранное количество
+            @RequestBody @NotEmpty Map<UUID, @NotNull @Positive Integer> products, // Отображение идентификатора товара на отобранное количество
             @RequestParam String username) {
         log.info("start добавить товары в корзину username={}, products={}", username, products);
-        // TODO реализовать
-        return null;
+        ShoppingCartDto result = shoppingCartService.addProductsToShoppingCart(products, username);
+        log.info("success добавить товары в корзину username={}, products={}, result={}", username, products, result);
+        return result;
     }
 
     // Деактивация корзины товаров для пользователя
     @DeleteMapping
     public void deactivateShoppingCart(@RequestParam String username) {
         log.info("start деактивировать корзину username={}", username);
-        // TODO реализовать
+        shoppingCartService.deactivateShoppingCart(username);
+        log.info("success деактивировать корзину username={}", username);
     }
 
     // Удалить указанные товары из корзины пользователя
@@ -56,17 +63,19 @@ public class ShoppingCartController {
             @RequestBody @NotEmpty List<UUID> productsIds, // Список идентификаторов товаров, которые нужно удалить
             @RequestParam String username) {
         log.info("start удалить товары username={}, productsIds={}", username, productsIds);
-        // TODO реализовать
-        return null;
+        ShoppingCartDto result = shoppingCartService.removeProductsFromShoppingCart(productsIds, username);
+        log.info("success удалить товары username={}, productsIds={}, result={}", username, productsIds, result);
+        return result;
     }
 
     // Изменить количество товаров в корзине
     @PostMapping("/change-quantity")
     public ShoppingCartDto changeProductsQuantityInShoppingCart(
-            @RequestBody @NotEmpty Map<UUID, @NotNull Integer> products, // Отображение идентификатора товара на отобранное количество
+            @RequestBody @NotEmpty Map<UUID, @NotNull @Positive Integer> products, // Отображение идентификатора товара на отобранное количество
             @RequestParam String username) {
         log.info("start изменить количество товаров username={}, products={}", username, products);
-        // TODO реализовать
-        return null;
+        ShoppingCartDto result = shoppingCartService.changeProductsQuantityInShoppingCart(products, username);
+        log.info("success изменить количество товаров username={}, products={}, result={}", username, products, result);
+        return result;
     }
 }

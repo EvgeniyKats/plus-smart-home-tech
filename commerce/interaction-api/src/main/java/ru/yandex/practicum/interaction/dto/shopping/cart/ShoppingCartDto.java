@@ -21,5 +21,5 @@ public class ShoppingCartDto {
 
     // Отображение идентификатора товара на отобранное количество.
     @NotNull
-    Map<String, Integer> products;
+    Map<UUID, Integer> products;
 }

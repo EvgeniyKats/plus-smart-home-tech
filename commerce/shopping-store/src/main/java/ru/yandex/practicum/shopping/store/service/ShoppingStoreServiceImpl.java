@@ -31,6 +31,8 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
         log.trace("start getProductsByCategory category={} pageable={}", category, pageable);
 
         PageRequest pageRequest = PageRequest.of(pageable.getPage(), pageable.getSize());
+
+        // поиск только ACTIVE товаров
         List<Product> products = productRepository.findByProductCategoryAndProductState(category,
                 ProductState.ACTIVE,
                 pageRequest);
