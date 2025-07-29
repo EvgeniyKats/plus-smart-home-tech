@@ -20,11 +20,20 @@ public class ApiErrorResponse {
     String localizedMessage;
 
     public ApiErrorResponse(BaseServiceException serviceException) {
-        cause = serviceException.getCause();
+        cause = serviceException;
         stackTrace = serviceException.getStackTrace();
         httpStatus = serviceException.getHttpStatus();
         userMessage = serviceException.getUserMessage();
         message = serviceException.getMessage();
         localizedMessage = serviceException.getLocalizedMessage();
+    }
+
+    public ApiErrorResponse(Throwable cause) {
+        this.cause = cause;
+        stackTrace = cause.getStackTrace();
+        httpStatus = "500";
+        userMessage = "unknown error";
+        message = cause.getMessage();
+        localizedMessage = cause.getLocalizedMessage();
     }
 }

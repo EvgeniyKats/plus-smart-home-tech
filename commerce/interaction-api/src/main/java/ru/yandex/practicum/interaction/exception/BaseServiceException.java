@@ -13,8 +13,4 @@ import lombok.experimental.FieldDefaults;
 public abstract class BaseServiceException extends RuntimeException {
     String httpStatus;
     String userMessage;
-
-    public BaseServiceException(Throwable cause) {
-        super(cause);
-    }
 }
