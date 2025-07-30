@@ -15,6 +15,7 @@ import ru.yandex.practicum.interaction.dto.warehouse.AddProductToWarehouseReques
 import ru.yandex.practicum.interaction.dto.warehouse.AddressDto;
 import ru.yandex.practicum.interaction.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.interaction.dto.warehouse.NewProductInWarehouseRequest;
+import ru.yandex.practicum.warehouse.service.WarehouseService;
 
 @RestController
 @RequestMapping("/api/v1/warehouse")
@@ -22,33 +23,39 @@ import ru.yandex.practicum.interaction.dto.warehouse.NewProductInWarehouseReques
 @RequiredArgsConstructor
 @Slf4j
 public class WarehouseController {
+    private final WarehouseService warehouseService;
+
     // Добавить новый товар на склад.
     @PutMapping
     public void newProduct(@Valid @RequestBody NewProductInWarehouseRequest newRequest) {
         log.info("start newProduct newRequest={}", newRequest);
-        // TODO реализовать
+        warehouseService.newProduct(newRequest);
+        log.info("success newProduct newRequest={}", newRequest);
     }
 
     // Предварительно проверить что количество товаров на складе достаточно для данной корзиный продуктов.
     @PostMapping("/check")
     public BookedProductsDto checkProducts(@Valid @RequestBody ShoppingCartDto shoppingCartDto) {
         log.info("start checkProducts shoppingCartDto={}", shoppingCartDto);
-        // TODO реализовать
-        return null;
+        BookedProductsDto result = warehouseService.checkProducts(shoppingCartDto);
+        log.info("success checkProducts shoppingCartDto={}, result={}", shoppingCartDto, result);
+        return result;
     }
 
     // Принять товар на склад.
     @PostMapping("/add")
     public void addProduct(@Valid @RequestBody AddProductToWarehouseRequest addRequest) {
         log.info("start addProduct addRequest={}", addRequest);
-        // TODO реализовать
+        warehouseService.addProduct(addRequest);
+        log.info("success addProduct addRequest={}", addRequest);
     }
 
     // Предоставить адрес склада для расчёта доставки.
     @GetMapping("/address")
     public AddressDto getAddress() {
         log.info("start getAddress");
-        // TODO реализовать
-        return null;
+        AddressDto result = warehouseService.getAddress();
+        log.info("success getAddress result={}", result);
+        return result;
     }
 }

@@ -1,6 +1,7 @@
 package ru.yandex.practicum.interaction.dto.shopping.cart;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -21,5 +22,5 @@ public class ShoppingCartDto {
 
     // Отображение идентификатора товара на отобранное количество.
     @NotNull
-    Map<UUID, Integer> products;
+    Map<UUID, @NotNull @Positive Integer> products;
 }
