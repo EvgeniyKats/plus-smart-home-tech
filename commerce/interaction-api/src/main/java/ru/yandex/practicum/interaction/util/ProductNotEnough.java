@@ -7,13 +7,13 @@ import lombok.experimental.FieldDefaults;
 import java.util.UUID;
 
 /**
- * Информация о продукте, которого не хватает на складе, передаётся в ProductInShoppingCartLowQuantityInWarehouse
+ * Информация о товаре, которого не хватает на складе, передаётся в ProductInShoppingCartLowQuantityInWarehouse
  */
 
 @Data
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ProductNotEnough {
-    // идентификатор продукта
+    // идентификатор товара
     UUID productId;
 
     // доступное количество для заказа

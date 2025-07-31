@@ -7,6 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.yandex.practicum.interaction.client.feign.warehouse.WarehouseFallbackException;
 import ru.yandex.practicum.interaction.exception.ApiErrorResponse;
 import ru.yandex.practicum.interaction.exception.shopping.cart.NoProductsInShoppingCartException;
 import ru.yandex.practicum.interaction.exception.shopping.cart.NotAuthorizedUserException;
@@ -48,6 +49,13 @@ public class ShoppingCartControllerAdvice {
     @ExceptionHandler(ShoppingCartDeactivateException.class)
     public ApiErrorResponse handleShoppingCartDeactivateException(ShoppingCartDeactivateException cause) {
         log.warn("Корзина деактивирована", cause);
+        return new ApiErrorResponse(cause);
+    }
+
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    @ExceptionHandler(WarehouseFallbackException.class)
+    public ApiErrorResponse handleWarehouseFallbackException(WarehouseFallbackException cause) {
+        log.error(cause.getMessage(), cause);
         return new ApiErrorResponse(cause);
     }
 

@@ -45,9 +45,8 @@ public class ShoppingStoreController {
         log.info("start createProduct productDto={}", productDto);
 
         ProductDto result = shoppingStoreService.createProduct(productDto);
-        log.debug("createProduct result={}", result);
 
-        log.info("success createProduct productDto={}", result);
+        log.info("success createProduct result={}", result);
         return result;
     }
 
@@ -58,9 +57,8 @@ public class ShoppingStoreController {
         log.info("start updateProduct productDto={}", productDto);
 
         ProductDto result = shoppingStoreService.updateProduct(productDto);
-        log.debug("updateProduct result={}", result);
 
-        log.info("success updateProduct productDto={}", productDto);
+        log.info("success updateProduct productDto={}, result={}", productDto, result);
         return result;
     }
 
@@ -70,9 +68,8 @@ public class ShoppingStoreController {
         log.info("start deleteProduct productId={}", productId);
 
         Boolean result = shoppingStoreService.deleteProduct(productId);
-        log.debug("deleteProduct result={}", result);
 
-        log.info("end deleteProduct productId={}", productId);
+        log.info("end deleteProduct productId={}, result={}", productId, result);
         return result;
     }
 
@@ -87,9 +84,8 @@ public class ShoppingStoreController {
         log.info("start setProductQuantityState request={}", request);
 
         Boolean result = shoppingStoreService.setProductQuantityState(request);
-        log.debug("setProductQuantityState result={}", result);
 
-        log.info("end setProductQuantityState request={}", request);
+        log.info("end setProductQuantityState request={}, result={}", request, result);
         return result;
     }
 
@@ -99,9 +95,8 @@ public class ShoppingStoreController {
         log.info("start getProduct productId={}", productId);
 
         ProductDto result = shoppingStoreService.getProduct(productId);
-        log.debug("getProduct result={}", result);
 
-        log.info("success getProduct productId={}", productId);
+        log.info("success getProduct productId={}, result={}", productId, result);
         return result;
     }
 }

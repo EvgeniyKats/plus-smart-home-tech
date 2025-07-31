@@ -1,4 +1,4 @@
-package ru.yandex.practicum.shopping.cart.feign;
+package ru.yandex.practicum.interaction.client.feign.decoder;
 
 import feign.Response;
 import feign.codec.ErrorDecoder;

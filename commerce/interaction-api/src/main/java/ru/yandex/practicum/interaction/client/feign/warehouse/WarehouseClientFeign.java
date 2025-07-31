@@ -1,4 +1,4 @@
-package ru.yandex.practicum.interaction.client.feign;
+package ru.yandex.practicum.interaction.client.feign.warehouse;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,13 +10,13 @@ import ru.yandex.practicum.interaction.dto.warehouse.AddressDto;
 import ru.yandex.practicum.interaction.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.interaction.dto.warehouse.NewProductInWarehouseRequest;
 
-@FeignClient(name = "warehouse")
+@FeignClient(name = "warehouse", fallback = WarehouseClientFallback.class)
 public interface WarehouseClientFeign {
     // Добавить новый товар на склад.
     @PutMapping("/api/v1/warehouse")
     void newProduct(NewProductInWarehouseRequest newRequest);
 
-    // Предварительно проверить что количество товаров на складе достаточно для данной корзиный продуктов.
+    // Предварительно проверить что количество товаров на складе достаточно для данной корзины товаров.
     @PostMapping("/api/v1/warehouse/check")
     BookedProductsDto checkProducts(ShoppingCartDto shoppingCartDto);
 

@@ -56,7 +56,7 @@ public class Address {
     @Column(name = "flat")
     String flat;
 
-    // Создаёт адрес для тестирования, заполняет специфичные поля указанным значением
+    // Создаёт адрес заполняя специфичные поля указанным значением
     public static Address createTestAddress(String value) {
         return Address.builder()
                 .country(value)

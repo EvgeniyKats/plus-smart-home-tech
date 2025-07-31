@@ -61,9 +61,9 @@ public class WarehouseServiceImpl implements WarehouseService {
 
         UUID productId = newRequest.getProductId();
 
-        // проверка, есть ли такой продукт уже на складе
+        // проверка, есть ли такой товар уже на складе
         productRepository.findById(productId).ifPresent(product -> {
-            log.warn("Продукт с id={} уже зарегистрирован", productId);
+            log.warn("Товар с id={} уже зарегистрирован", productId);
             throw new SpecifiedProductAlreadyInWarehouseException();
         });
 
@@ -88,8 +88,8 @@ public class WarehouseServiceImpl implements WarehouseService {
                 .fragile(false)
                 .build();
 
-        List<ProductNotEnough> productsNotEnough = new ArrayList<>(); // товары, которых недостаточно.
-        List<UUID> productsNotFound = new ArrayList<>(); // товары, которых нет в БД.
+        List<ProductNotEnough> productsNotEnough = new ArrayList<>(); // товары, которых недостаточно на складе.
+        List<UUID> productsNotFound = new ArrayList<>(); // товары, которых нет в БД склада.
 
         for (Map.Entry<UUID, Integer> entry : shoppingCartDto.getProducts().entrySet()) {
             UUID id = entry.getKey();

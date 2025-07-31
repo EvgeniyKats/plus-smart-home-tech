@@ -33,7 +33,7 @@ public class WarehouseController {
         log.info("success newProduct newRequest={}", newRequest);
     }
 
-    // Предварительно проверить что количество товаров на складе достаточно для данной корзиный продуктов.
+    // Предварительно проверить что количество товаров на складе достаточно для данной корзины товаров.
     @PostMapping("/check")
     public BookedProductsDto checkProducts(@Valid @RequestBody ShoppingCartDto shoppingCartDto) {
         log.info("start checkProducts shoppingCartDto={}", shoppingCartDto);

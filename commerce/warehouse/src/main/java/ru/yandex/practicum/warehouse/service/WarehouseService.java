@@ -10,7 +10,7 @@ public interface WarehouseService {
     // Добавить новый товар на склад.
     void newProduct(NewProductInWarehouseRequest newRequest);
 
-    // Предварительно проверить что количество товаров на складе достаточно для данной корзиный продуктов.
+    // Предварительно проверить что количество товаров на складе достаточно для данной корзины товаров.
     BookedProductsDto checkProducts(ShoppingCartDto shoppingCartDto);
 
     // Принять товар на склад.

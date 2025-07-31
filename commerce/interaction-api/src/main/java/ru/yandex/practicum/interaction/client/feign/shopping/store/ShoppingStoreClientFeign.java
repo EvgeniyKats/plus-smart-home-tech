@@ -1,4 +1,4 @@
-package ru.yandex.practicum.interaction.client.feign;
+package ru.yandex.practicum.interaction.client.feign.shopping.store;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +12,7 @@ import ru.yandex.practicum.interaction.dto.shopping.store.SetProductQuantityStat
 
 import java.util.UUID;
 
-@FeignClient(name = "shopping-store")
+@FeignClient(name = "shopping-store", fallback = ShoppingStoreFallback.class)
 public interface ShoppingStoreClientFeign {
     // Получение списка товаров по типу в пагинированном виде
     @GetMapping("/api/v1/shopping-store")

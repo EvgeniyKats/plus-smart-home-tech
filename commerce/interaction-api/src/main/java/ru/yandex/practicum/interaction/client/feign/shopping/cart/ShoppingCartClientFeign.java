@@ -1,4 +1,4 @@
-package ru.yandex.practicum.interaction.client.feign;
+package ru.yandex.practicum.interaction.client.feign.shopping.cart;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@FeignClient(name = "shopping-cart")
+@FeignClient(name = "shopping-cart", fallback = ShoppingCartFallback.class)
 public interface ShoppingCartClientFeign {
 
     @GetMapping("/api/v1/shopping-cart")

@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.interaction.client.feign.WarehouseClientFeign;
+import ru.yandex.practicum.interaction.client.feign.warehouse.WarehouseClientFeign;
+import ru.yandex.practicum.interaction.client.feign.warehouse.WarehouseFallbackException;
 import ru.yandex.practicum.interaction.dto.shopping.cart.ChangeProductQuantityRequest;
 import ru.yandex.practicum.interaction.dto.shopping.cart.ShoppingCartDto;
 import ru.yandex.practicum.interaction.dto.warehouse.BookedProductsDto;
@@ -53,10 +54,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         // проверка возможности модификации корзины
         validateShoppingCartModifiable(shoppingCart);
 
-        // проверка доступности на складе
-        checkProductsInWarehouseAvailable(shoppingCart, products);
+        // проверка доступности товаров на складе
+        checkProductsInWarehouseAvailable(shoppingCart.getShoppingCartId(), products);
 
-        // добавление продуктов в корзину
+        // добавление товаров в корзину
         products.forEach((id, count) -> shoppingCart.getProducts().merge(id, count, Integer::sum));
 
         log.trace("end addProductsToShoppingCart username={}, products={}", username, products);
@@ -111,7 +112,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         validateShoppingCartHaveAllProductIds(shoppingCart, List.of(request.getProductId()));
 
         // проверка доступности на складе
-        checkProductsInWarehouseAvailable(shoppingCart, Map.of(request.getProductId(), request.getNewQuantity()));
+        checkProductsInWarehouseAvailable(shoppingCart.getShoppingCartId(),
+                Map.of(request.getProductId(), request.getNewQuantity()));
 
         // изменение товаров
         shoppingCart.getProducts().forEach((id, count) -> shoppingCart.getProducts().put(id, count));
@@ -203,14 +205,21 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         log.trace("success validate, cart={} have all products", shoppingCart.getShoppingCartId());
     }
 
-    private void checkProductsInWarehouseAvailable(ShoppingCart shoppingCart, Map<UUID, Integer> products) {
+    /**
+     * Проверит доступность товаров на складе
+     *
+     * @param shoppingCartId - идентификатор корзины
+     * @param products       - продукты для проверки на складе
+     * @throws WarehouseFallbackException если warehouse недоступен
+     */
+    private void checkProductsInWarehouseAvailable(UUID shoppingCartId, Map<UUID, Integer> products) {
         // проверка наличия на складе
         ShoppingCartDto shoppingCartDto = ShoppingCartDto.builder()
-                .shoppingCartId(shoppingCart.getShoppingCartId())
+                .shoppingCartId(shoppingCartId)
                 .products(products)
                 .build();
 
-        // обработка ошибок в ru.yandex.practicum.shopping.cart.feign.FeignErrorDecoder
+        // обработка ошибочных кодов в ru.yandex.practicum.interaction.client.feign.decoder.FeignErrorDecoder
         BookedProductsDto bookedProductsDto = warehouseClientFeign.checkProducts(shoppingCartDto);
         log.trace("успешно проверены товары на складе {}, получен ответ {}", products, bookedProductsDto);
     }
