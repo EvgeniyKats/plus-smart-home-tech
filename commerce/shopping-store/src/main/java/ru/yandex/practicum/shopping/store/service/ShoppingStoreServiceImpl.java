@@ -2,12 +2,12 @@ package ru.yandex.practicum.shopping.store.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.interaction.dto.shopping.store.Pageable;
 import ru.yandex.practicum.interaction.dto.shopping.store.ProductCategory;
 import ru.yandex.practicum.interaction.dto.shopping.store.ProductDto;
+import ru.yandex.practicum.interaction.dto.shopping.store.ProductPageDto;
 import ru.yandex.practicum.interaction.dto.shopping.store.ProductState;
 import ru.yandex.practicum.interaction.dto.shopping.store.SetProductQuantityStateRequest;
 import ru.yandex.practicum.interaction.exception.shopping.store.ProductNotFoundException;
@@ -27,24 +27,24 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
     private final ProductMapper productMapper;
 
     @Override
-    public List<ProductDto> getProductsByCategory(ProductCategory category, Pageable pageable) {
+    public ProductPageDto getProductsByCategory(ProductCategory category, Pageable pageable) {
         log.trace("start getProductsByCategory category={} pageable={}", category, pageable);
 
-        PageRequest pageRequest = PageRequest.of(pageable.getPage(), pageable.getSize());
+        // поиск только всех товаров
+        List<Product> products = productRepository.findByProductCategory(category, pageable);
 
-        // поиск только ACTIVE товаров
-        List<Product> products = productRepository.findByProductCategoryAndProductState(category,
-                ProductState.ACTIVE,
-                pageRequest);
-
-        log.trace("success getProductsByCategory category={} pageable={} count={}",
-                category,
-                pageable,
-                products.size());
-
-        return products.stream()
+        List<ProductDto> productsDto = products.stream()
                 .map(productMapper::toProductDto)
                 .toList();
+
+        ProductPageDto result = new ProductPageDto(productsDto, pageable.getSort());
+
+        log.trace("success getProductsByCategory category={} pageable={} result={}",
+                category,
+                pageable,
+                result);
+
+        return result;
     }
 
     @Transactional
@@ -54,7 +54,7 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
 
         Product product = productMapper.toProduct(productDto);
         productRepository.save(product);
-        log.trace("success create product={}", product);
+        log.trace("success create productId={}", product.getProductId());
 
         return productMapper.toProductDto(product);
     }
@@ -71,7 +71,7 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
 
         // обновление
         productMapper.updateProductFromDto(product, productDto);
-        log.trace("success updateProduct product={}", product);
+        log.trace("success updateProduct productId={}", product.getProductId());
 
         return productMapper.toProductDto(product);
     }

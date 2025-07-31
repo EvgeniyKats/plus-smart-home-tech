@@ -1,5 +1,6 @@
 package ru.yandex.practicum.shopping.cart.controller;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.interaction.dto.shopping.cart.ChangeProductQuantityRequest;
 import ru.yandex.practicum.interaction.dto.shopping.cart.ShoppingCartDto;
 import ru.yandex.practicum.shopping.cart.service.ShoppingCartService;
 
@@ -71,11 +73,11 @@ public class ShoppingCartController {
     // Изменить количество товаров в корзине
     @PostMapping("/change-quantity")
     public ShoppingCartDto changeProductsQuantityInShoppingCart(
-            @RequestBody @NotEmpty Map<UUID, @NotNull @Positive Integer> products, // Отображение идентификатора товара на отобранное количество
+            @Valid @RequestBody ChangeProductQuantityRequest request, // Отображение идентификатора товара на отобранное количество
             @RequestParam String username) {
-        log.info("start изменить количество товаров username={}, products={}", username, products);
-        ShoppingCartDto result = shoppingCartService.changeProductsQuantityInShoppingCart(products, username);
-        log.info("success изменить количество товаров username={}, products={}, result={}", username, products, result);
+        log.info("start изменить количество товаров username={}, request={}", username, request);
+        ShoppingCartDto result = shoppingCartService.changeProductsQuantityInShoppingCart(request, username);
+        log.info("success изменить количество товаров username={}, request={}, result={}", username, request, result);
         return result;
     }
 }

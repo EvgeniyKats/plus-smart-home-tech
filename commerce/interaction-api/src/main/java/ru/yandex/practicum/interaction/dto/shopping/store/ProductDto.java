@@ -3,9 +3,8 @@ package ru.yandex.practicum.interaction.dto.shopping.store;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Builder;
+import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
@@ -15,10 +14,9 @@ import java.util.UUID;
  * Товар, продаваемый в интернет-магазине
  */
 
-@Getter
-@Setter
+@Data
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@ToString
 public class ProductDto {
     // Идентификатор товара в БД
     UUID productId;

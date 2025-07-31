@@ -1,32 +1,41 @@
-package ru.yandex.practicum.shopping.cart.service;
+package ru.yandex.practicum.interaction.client.feign;
 
-import ru.yandex.practicum.interaction.dto.shopping.cart.ChangeProductQuantityRequest;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import ru.yandex.practicum.interaction.dto.shopping.cart.ShoppingCartDto;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public interface ShoppingCartService {
+@FeignClient(name = "shopping-cart")
+public interface ShoppingCartClientFeign {
 
-    // Получить актуальную корзину для авторизованного пользователя.
+    @GetMapping("/api/v1/shopping-cart")
     ShoppingCartDto getShoppingCart(String username);
 
     // Добавить товар в корзину
+    @PutMapping("/api/v1/shopping-cart")
     ShoppingCartDto addProductsToShoppingCart(
             Map<UUID, Integer> products, // Отображение идентификатора товара на отобранное количество
             String username);
 
     // Деактивация корзины товаров для пользователя
+    @DeleteMapping("/api/v1/shopping-cart")
     void deactivateShoppingCart(String username);
 
     // Удалить указанные товары из корзины пользователя
+    @PostMapping("/api/v1/shopping-cart/remove")
     ShoppingCartDto removeProductsFromShoppingCart(
             List<UUID> productsIds, // Список идентификаторов товаров, которые нужно удалить
             String username);
 
     // Изменить количество товаров в корзине
+    @PostMapping("/api/v1/shopping-cart/change-quantity")
     ShoppingCartDto changeProductsQuantityInShoppingCart(
-            ChangeProductQuantityRequest request, // Отображение идентификатора товара на отобранное количество
+            Map<UUID, Integer> products, // Отображение идентификатора товара на отобранное количество
             String username);
 }

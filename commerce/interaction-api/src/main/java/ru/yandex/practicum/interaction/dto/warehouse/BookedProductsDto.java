@@ -24,5 +24,5 @@ public class BookedProductsDto {
 
     // Есть ли хрупкие вещи в доставке
     @NotNull
-    Boolean fragile;
+    boolean fragile;
 }

@@ -3,6 +3,7 @@ package ru.yandex.practicum.shopping.store.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,13 +12,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.interaction.dto.shopping.store.Pageable;
 import ru.yandex.practicum.interaction.dto.shopping.store.ProductCategory;
 import ru.yandex.practicum.interaction.dto.shopping.store.ProductDto;
+import ru.yandex.practicum.interaction.dto.shopping.store.ProductPageDto;
+import ru.yandex.practicum.interaction.dto.shopping.store.QuantityState;
 import ru.yandex.practicum.interaction.dto.shopping.store.SetProductQuantityStateRequest;
 import ru.yandex.practicum.shopping.store.service.ShoppingStoreService;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -29,14 +30,12 @@ public class ShoppingStoreController {
 
     // Получение списка товаров по типу в пагинированном виде
     @GetMapping
-    public List<ProductDto> getProductsByCategory(@RequestParam ProductCategory category,
-                                                  @RequestParam Pageable pageable) {
+    public ProductPageDto getProductsByCategory(@RequestParam ProductCategory category, Pageable pageable) {
         log.info("start getProductsByCategory category={}, pageable={}", category, pageable);
 
-        List<ProductDto> result = shoppingStoreService.getProductsByCategory(category, pageable);
-        log.debug("getProductsByCategory result={}", result);
+        ProductPageDto result = shoppingStoreService.getProductsByCategory(category, pageable);
 
-        log.info("success getProductsByCategory category={}, pageable={}", category, pageable);
+        log.info("success getProductsByCategory category={}, pageable={}, result={}", category, pageable, result);
         return result;
     }
 
@@ -48,7 +47,7 @@ public class ShoppingStoreController {
         ProductDto result = shoppingStoreService.createProduct(productDto);
         log.debug("createProduct result={}", result);
 
-        log.info("success createProduct productDto={}", productDto);
+        log.info("success createProduct productDto={}", result);
         return result;
     }
 
@@ -79,7 +78,12 @@ public class ShoppingStoreController {
 
     // Установка статуса по товару. API вызывается со стороны склада.
     @PostMapping("/quantityState")
-    public Boolean setProductQuantityState(@Valid @RequestBody SetProductQuantityStateRequest request) {
+    public Boolean setProductQuantityState(@RequestParam UUID productId,
+                                           @RequestParam QuantityState quantityState) {
+        SetProductQuantityStateRequest request = SetProductQuantityStateRequest.builder()
+                .productId(productId)
+                .quantityState(quantityState)
+                .build();
         log.info("start setProductQuantityState request={}", request);
 
         Boolean result = shoppingStoreService.setProductQuantityState(request);

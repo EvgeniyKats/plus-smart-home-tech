@@ -4,7 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.interaction.client.feign.WarehouseClientFeign;
+import ru.yandex.practicum.interaction.dto.shopping.cart.ChangeProductQuantityRequest;
 import ru.yandex.practicum.interaction.dto.shopping.cart.ShoppingCartDto;
+import ru.yandex.practicum.interaction.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.interaction.exception.shopping.cart.NoProductsInShoppingCartException;
 import ru.yandex.practicum.interaction.exception.shopping.cart.NotAuthorizedUserException;
 import ru.yandex.practicum.interaction.exception.shopping.cart.ShoppingCartDeactivateException;
@@ -27,6 +30,7 @@ import java.util.UUID;
 public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final ShoppingCartMapper shoppingCartMapper;
+    private final WarehouseClientFeign warehouseClientFeign;
 
     @Transactional
     @Override
@@ -46,7 +50,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         validateUsername(username);
         ShoppingCart shoppingCart = getOrCreateShoppingCartByUsername(username);
 
+        // проверка возможности модификации корзины
         validateShoppingCartModifiable(shoppingCart);
+
+        // проверка доступности на складе
+        checkProductsInWarehouseAvailable(shoppingCart, products);
 
         // добавление продуктов в корзину
         products.forEach((id, count) -> shoppingCart.getProducts().merge(id, count, Integer::sum));
@@ -74,6 +82,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         validateUsername(username);
 
         ShoppingCart shoppingCart = getOrCreateShoppingCartByUsername(username);
+
+        // проверка возможности модификации корзины
+        validateShoppingCartModifiable(shoppingCart);
+
         // проверка, все ли товары для удаления есть в корзине
         validateShoppingCartHaveAllProductIds(shoppingCart, productsIds);
 
@@ -86,18 +98,25 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Transactional
     @Override
-    public ShoppingCartDto changeProductsQuantityInShoppingCart(Map<UUID, Integer> products, String username) {
-        log.trace("start changeProductsQuantityInShoppingCart username={}, products={}", username, products);
+    public ShoppingCartDto changeProductsQuantityInShoppingCart(ChangeProductQuantityRequest request, String username) {
+        log.trace("start changeProductsQuantityInShoppingCart username={}, request={}", username, request);
         validateUsername(username);
 
         ShoppingCart shoppingCart = getOrCreateShoppingCartByUsername(username);
+
+        // проверка возможности модификации корзины
+        validateShoppingCartModifiable(shoppingCart);
+
         // проверка, все ли товары для изменения количества есть в корзине
-        validateShoppingCartHaveAllProductIds(shoppingCart, products.keySet());
+        validateShoppingCartHaveAllProductIds(shoppingCart, List.of(request.getProductId()));
+
+        // проверка доступности на складе
+        checkProductsInWarehouseAvailable(shoppingCart, Map.of(request.getProductId(), request.getNewQuantity()));
 
         // изменение товаров
-        products.forEach((id, count) -> shoppingCart.getProducts().put(id, count));
+        shoppingCart.getProducts().forEach((id, count) -> shoppingCart.getProducts().put(id, count));
 
-        log.trace("end changeProductsQuantityInShoppingCart username={}, products={}", username, products);
+        log.trace("end changeProductsQuantityInShoppingCart username={}, request={}", username, request);
         return shoppingCartMapper.toShoppingCartDto(shoppingCart);
     }
 
@@ -121,6 +140,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     /**
      * Проверяет, является ли username пустым (или равен null)
+     *
      * @throws NotAuthorizedUserException, если username пустой
      */
     private void validateUsername(String username) {
@@ -133,6 +153,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     /**
      * Проверяет корзину на возможность модификации
+     *
      * @throws ShoppingCartDeactivateException , если корзина деактивирована (её статус DEACTIVATE)
      */
     private void validateShoppingCartModifiable(ShoppingCart shoppingCart) {
@@ -153,14 +174,14 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
      * @implNote time: O(n), n - размер productsIds, mem: O(n) - размер notFoundIds = в худшем случае productsIds
      */
     private void validateShoppingCartHaveAllProductIds(ShoppingCart shoppingCart, Collection<UUID> productsIds) {
-        // если количество удаляемых товаров > количество товаров в корзине, возникает несоответствие
+        // если количество проверяемых товаров > количество товаров в корзине, возникает несоответствие
         int countProductInCart = shoppingCart.getProducts().size();
-        int countProductToRemove = productsIds.size();
+        int countProductToCheck = productsIds.size();
 
-        if (countProductToRemove > countProductInCart) {
-            log.warn("Количество удаляемых товаров больше чем товаров в корзине countProductInCart={}, countProductToRemove={}",
+        if (countProductToCheck > countProductInCart) {
+            log.warn("Количество проверяемых товаров больше чем товаров в корзине countProductInCart={}, countProductToCheck={}",
                     countProductInCart,
-                    countProductToRemove);
+                    countProductToCheck);
             throw new NoProductsInShoppingCartException();
         }
 
@@ -174,7 +195,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             }
         });
 
-        // если notFoundIds не пустой, значит в корзине отсутствуют товары для удаления
+        // если notFoundIds не пустой, значит в корзине отсутствуют проверяемые товары
         if (!notFoundIds.isEmpty()) {
             log.warn("Обнаружены товары, которых нет в корзине notFoundIds={}", notFoundIds);
             throw new NoProductsInShoppingCartException();
@@ -182,4 +203,15 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         log.trace("success validate, cart={} have all products", shoppingCart.getShoppingCartId());
     }
 
+    private void checkProductsInWarehouseAvailable(ShoppingCart shoppingCart, Map<UUID, Integer> products) {
+        // проверка наличия на складе
+        ShoppingCartDto shoppingCartDto = ShoppingCartDto.builder()
+                .shoppingCartId(shoppingCart.getShoppingCartId())
+                .products(products)
+                .build();
+
+        // обработка ошибок в ru.yandex.practicum.shopping.cart.feign.FeignErrorDecoder
+        BookedProductsDto bookedProductsDto = warehouseClientFeign.checkProducts(shoppingCartDto);
+        log.trace("успешно проверены товары на складе {}, получен ответ {}", products, bookedProductsDto);
+    }
 }

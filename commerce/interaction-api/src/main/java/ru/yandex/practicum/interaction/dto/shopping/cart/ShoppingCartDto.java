@@ -3,6 +3,7 @@ package ru.yandex.practicum.interaction.dto.shopping.cart;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
  */
 
 @Data
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ShoppingCartDto {
     // Идентификатор корзины в БД

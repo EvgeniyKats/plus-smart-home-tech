@@ -53,5 +53,6 @@ public class Product {
 
     // Количество товара на складе
     @Column(name = "quantity")
-    Integer quantity;
+    @Builder.Default
+    Integer quantity = 0;
 }

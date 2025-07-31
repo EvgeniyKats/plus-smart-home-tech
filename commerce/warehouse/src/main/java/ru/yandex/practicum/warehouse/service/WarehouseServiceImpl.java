@@ -126,8 +126,10 @@ public class WarehouseServiceImpl implements WarehouseService {
             result.setDeliveryWeight(newWeight);
 
             // Признак хрупкости, если хотя бы 1 товар хрупкий, заказ считается хрупким
-            boolean fragile = result.getFragile() || product.getFragile(); // true true -> t, tf->t,  ff->f
-            result.setFragile(fragile);
+            if (product.getFragile() != null) {
+                boolean fragile = result.isFragile() || product.getFragile(); // true true -> t, tf->t,  ff->f
+                result.setFragile(fragile);
+            }
         }
 
         // если есть товары, информации о которых нет на складе
