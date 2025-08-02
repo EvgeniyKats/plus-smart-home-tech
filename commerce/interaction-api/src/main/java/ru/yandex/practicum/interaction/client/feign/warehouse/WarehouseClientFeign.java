@@ -10,21 +10,21 @@ import ru.yandex.practicum.interaction.dto.warehouse.AddressDto;
 import ru.yandex.practicum.interaction.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.interaction.dto.warehouse.NewProductInWarehouseRequest;
 
-@FeignClient(name = "warehouse", fallback = WarehouseClientFallback.class)
+@FeignClient(name = "warehouse", path = "/api/v1/warehouse", fallback = WarehouseClientFallback.class)
 public interface WarehouseClientFeign {
     // Добавить новый товар на склад.
-    @PutMapping("/api/v1/warehouse")
+    @PutMapping
     void newProduct(NewProductInWarehouseRequest newRequest);
 
     // Предварительно проверить что количество товаров на складе достаточно для данной корзины товаров.
-    @PostMapping("/api/v1/warehouse/check")
+    @PostMapping("/check")
     BookedProductsDto checkProducts(ShoppingCartDto shoppingCartDto);
 
     // Принять товар на склад.
-    @PostMapping("/api/v1/warehouse/add")
+    @PostMapping("/add")
     void addProduct(AddProductToWarehouseRequest addRequest);
 
     // Предоставить адрес склада для расчёта доставки.
-    @GetMapping("/api/v1/warehouse/address")
+    @GetMapping("/address")
     AddressDto getAddress();
 }

@@ -12,29 +12,29 @@ import ru.yandex.practicum.interaction.dto.shopping.store.SetProductQuantityStat
 
 import java.util.UUID;
 
-@FeignClient(name = "shopping-store", fallback = ShoppingStoreFallback.class)
+@FeignClient(name = "shopping-store", path = "/api/v1/shopping-store", fallback = ShoppingStoreFallback.class)
 public interface ShoppingStoreClientFeign {
     // Получение списка товаров по типу в пагинированном виде
-    @GetMapping("/api/v1/shopping-store")
+    @GetMapping
     ProductPageDto getProductsByCategory(ProductCategory category, Pageable pageable);
 
     // Создание нового товара в ассортименте
-    @PutMapping("/api/v1/shopping-store")
+    @PutMapping
     ProductDto createProduct(ProductDto productDto);
 
     // Обновление товара в ассортименте, например уточнение описания, характеристик и т.д.
-    @PostMapping("/api/v1/shopping-store")
+    @PostMapping
     ProductDto updateProduct(ProductDto productDto);
 
     // Удалить товар из ассортимента магазина. Функция для менеджерского состава.
-    @PostMapping("/api/v1/shopping-store/removeProductFromStore")
+    @PostMapping("/removeProductFromStore")
     Boolean deleteProduct(UUID productId);
 
     // Установка статуса по товару. API вызывается со стороны склада.
-    @PostMapping("/api/v1/shopping-store/quantityState")
+    @PostMapping("/quantityState")
     Boolean setProductQuantityState(SetProductQuantityStateRequest request);
 
     // Получить сведения по товару из БД.
-    @GetMapping("/api/v1/shopping-store/{productId}")
+    @GetMapping("/{productId}")
     ProductDto getProduct(UUID productId);
 }

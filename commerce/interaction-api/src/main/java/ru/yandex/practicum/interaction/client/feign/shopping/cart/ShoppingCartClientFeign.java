@@ -11,30 +11,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@FeignClient(name = "shopping-cart", fallback = ShoppingCartFallback.class)
+@FeignClient(name = "shopping-cart", path = "/api/v1/shopping-cart", fallback = ShoppingCartFallback.class)
 public interface ShoppingCartClientFeign {
 
-    @GetMapping("/api/v1/shopping-cart")
+    @GetMapping
     ShoppingCartDto getShoppingCart(String username);
 
     // Добавить товар в корзину
-    @PutMapping("/api/v1/shopping-cart")
+    @PutMapping
     ShoppingCartDto addProductsToShoppingCart(
             Map<UUID, Integer> products, // Отображение идентификатора товара на отобранное количество
             String username);
 
     // Деактивация корзины товаров для пользователя
-    @DeleteMapping("/api/v1/shopping-cart")
+    @DeleteMapping
     void deactivateShoppingCart(String username);
 
     // Удалить указанные товары из корзины пользователя
-    @PostMapping("/api/v1/shopping-cart/remove")
+    @PostMapping("/remove")
     ShoppingCartDto removeProductsFromShoppingCart(
             List<UUID> productsIds, // Список идентификаторов товаров, которые нужно удалить
             String username);
 
     // Изменить количество товаров в корзине
-    @PostMapping("/api/v1/shopping-cart/change-quantity")
+    @PostMapping("/change-quantity")
     ShoppingCartDto changeProductsQuantityInShoppingCart(
             Map<UUID, Integer> products, // Отображение идентификатора товара на отобранное количество
             String username);
