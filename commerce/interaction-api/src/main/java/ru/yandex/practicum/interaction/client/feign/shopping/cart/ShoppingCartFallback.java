@@ -2,6 +2,7 @@ package ru.yandex.practicum.interaction.client.feign.shopping.cart;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.interaction.dto.shopping.cart.ChangeProductQuantityRequest;
 import ru.yandex.practicum.interaction.dto.shopping.cart.ShoppingCartDto;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public class ShoppingCartFallback implements ShoppingCartClientFeign {
     }
 
     @Override
-    public ShoppingCartDto changeProductsQuantityInShoppingCart(Map<UUID, Integer> products, String username) {
+    public ShoppingCartDto changeProductsQuantityInShoppingCart(ChangeProductQuantityRequest request, String username) {
         ShoppingCartFallbackException cause = new ShoppingCartFallbackException();
         log.error(cause.getMessage(), cause);
         throw cause;

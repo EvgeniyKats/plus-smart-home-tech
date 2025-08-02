@@ -3,10 +3,11 @@ package ru.yandex.practicum.interaction.client.feign.shopping.store;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.interaction.dto.shopping.store.ProductCategory;
 import ru.yandex.practicum.interaction.dto.shopping.store.ProductDto;
 import ru.yandex.practicum.interaction.dto.shopping.store.ProductPageDto;
-import ru.yandex.practicum.interaction.dto.shopping.store.SetProductQuantityStateRequest;
+import ru.yandex.practicum.interaction.dto.shopping.store.QuantityState;
 
 import java.util.UUID;
 
@@ -43,7 +44,8 @@ public class ShoppingStoreFallback implements ShoppingStoreClientFeign {
     }
 
     @Override
-    public Boolean setProductQuantityState(SetProductQuantityStateRequest request) {
+    public Boolean setProductQuantityState(@RequestParam UUID productId,
+                                           @RequestParam QuantityState quantityState) {
         ShoppingStoreFallbackException cause = new ShoppingStoreFallbackException();
         log.error(cause.getMessage(), cause);
         throw cause;

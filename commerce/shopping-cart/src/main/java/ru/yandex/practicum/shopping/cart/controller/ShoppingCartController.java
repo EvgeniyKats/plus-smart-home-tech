@@ -1,20 +1,11 @@
 package ru.yandex.practicum.shopping.cart.controller;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.interaction.api.shopping.cart.ShoppingCartApi;
 import ru.yandex.practicum.interaction.dto.shopping.cart.ChangeProductQuantityRequest;
 import ru.yandex.practicum.interaction.dto.shopping.cart.ShoppingCartDto;
 import ru.yandex.practicum.shopping.cart.service.ShoppingCartService;
@@ -28,12 +19,12 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/shopping-cart")
-public class ShoppingCartController {
+public class ShoppingCartController implements ShoppingCartApi {
     private final ShoppingCartService shoppingCartService;
 
     // Получить актуальную корзину для авторизованного пользователя.
-    @GetMapping
-    public ShoppingCartDto getShoppingCart(@RequestParam String username) {
+    @Override
+    public ShoppingCartDto getShoppingCart(String username) {
         log.info("start получить корзину username={}", username);
         ShoppingCartDto result = shoppingCartService.getShoppingCart(username);
         log.info("success получить корзину username={}, result={}", username, result);
@@ -41,10 +32,10 @@ public class ShoppingCartController {
     }
 
     // Добавить товар в корзину
-    @PutMapping
+    @Override
     public ShoppingCartDto addProductsToShoppingCart(
-            @RequestBody @NotEmpty Map<UUID, @NotNull @Positive Integer> products, // Отображение идентификатора товара на отобранное количество
-            @RequestParam String username) {
+            Map<UUID, Integer> products, // Отображение идентификатора товара на отобранное количество
+            String username) {
         log.info("start добавить товары в корзину username={}, products={}", username, products);
         ShoppingCartDto result = shoppingCartService.addProductsToShoppingCart(products, username);
         log.info("success добавить товары в корзину username={}, products={}, result={}", username, products, result);
@@ -52,18 +43,18 @@ public class ShoppingCartController {
     }
 
     // Деактивация корзины товаров для пользователя
-    @DeleteMapping
-    public void deactivateShoppingCart(@RequestParam String username) {
+    @Override
+    public void deactivateShoppingCart(String username) {
         log.info("start деактивировать корзину username={}", username);
         shoppingCartService.deactivateShoppingCart(username);
         log.info("success деактивировать корзину username={}", username);
     }
 
     // Удалить указанные товары из корзины пользователя
-    @PostMapping("/remove")
+    @Override
     public ShoppingCartDto removeProductsFromShoppingCart(
-            @RequestBody @NotEmpty List<UUID> productsIds, // Список идентификаторов товаров, которые нужно удалить
-            @RequestParam String username) {
+            List<UUID> productsIds, // Список идентификаторов товаров, которые нужно удалить
+            String username) {
         log.info("start удалить товары username={}, productsIds={}", username, productsIds);
         ShoppingCartDto result = shoppingCartService.removeProductsFromShoppingCart(productsIds, username);
         log.info("success удалить товары username={}, productsIds={}, result={}", username, productsIds, result);
@@ -71,10 +62,10 @@ public class ShoppingCartController {
     }
 
     // Изменить количество товаров в корзине
-    @PostMapping("/change-quantity")
+    @Override
     public ShoppingCartDto changeProductsQuantityInShoppingCart(
-            @Valid @RequestBody ChangeProductQuantityRequest request, // Отображение идентификатора товара на отобранное количество
-            @RequestParam String username) {
+            ChangeProductQuantityRequest request, // Отображение идентификатора товара на отобранное количество
+            String username) {
         log.info("start изменить количество товаров username={}, request={}", username, request);
         ShoppingCartDto result = shoppingCartService.changeProductsQuantityInShoppingCart(request, username);
         log.info("success изменить количество товаров username={}, request={}, result={}", username, request, result);

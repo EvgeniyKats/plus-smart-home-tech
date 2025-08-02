@@ -1,17 +1,11 @@
 package ru.yandex.practicum.shopping.store.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.interaction.api.shopping.store.ShoppingStoreApi;
 import ru.yandex.practicum.interaction.dto.shopping.store.ProductCategory;
 import ru.yandex.practicum.interaction.dto.shopping.store.ProductDto;
 import ru.yandex.practicum.interaction.dto.shopping.store.ProductPageDto;
@@ -25,12 +19,12 @@ import java.util.UUID;
 @RequestMapping("/api/v1/shopping-store")
 @RequiredArgsConstructor
 @Slf4j
-public class ShoppingStoreController {
+public class ShoppingStoreController implements ShoppingStoreApi {
     private final ShoppingStoreService shoppingStoreService;
 
     // Получение списка товаров по типу в пагинированном виде
-    @GetMapping
-    public ProductPageDto getProductsByCategory(@RequestParam ProductCategory category, Pageable pageable) {
+    @Override
+    public ProductPageDto getProductsByCategory(ProductCategory category, Pageable pageable) {
         log.info("start getProductsByCategory category={}, pageable={}", category, pageable);
 
         ProductPageDto result = shoppingStoreService.getProductsByCategory(category, pageable);
@@ -40,8 +34,8 @@ public class ShoppingStoreController {
     }
 
     // Создание нового товара в ассортименте
-    @PutMapping
-    public ProductDto createProduct(@Valid @RequestBody ProductDto productDto) {
+    @Override
+    public ProductDto createProduct(ProductDto productDto) {
         log.info("start createProduct productDto={}", productDto);
 
         ProductDto result = shoppingStoreService.createProduct(productDto);
@@ -52,8 +46,8 @@ public class ShoppingStoreController {
 
 
     // Обновление товара в ассортименте, например уточнение описания, характеристик и т.д.
-    @PostMapping
-    public ProductDto updateProduct(@Valid @RequestBody ProductDto productDto) {
+    @Override
+    public ProductDto updateProduct(ProductDto productDto) {
         log.info("start updateProduct productDto={}", productDto);
 
         ProductDto result = shoppingStoreService.updateProduct(productDto);
@@ -63,8 +57,8 @@ public class ShoppingStoreController {
     }
 
     // Удалить товар из ассортимента магазина. Функция для менеджерского состава.
-    @PostMapping("/removeProductFromStore")
-    public Boolean deleteProduct(@RequestBody UUID productId) {
+    @Override
+    public Boolean deleteProduct(UUID productId) {
         log.info("start deleteProduct productId={}", productId);
 
         Boolean result = shoppingStoreService.deleteProduct(productId);
@@ -74,9 +68,9 @@ public class ShoppingStoreController {
     }
 
     // Установка статуса по товару. API вызывается со стороны склада.
-    @PostMapping("/quantityState")
-    public Boolean setProductQuantityState(@RequestParam UUID productId,
-                                           @RequestParam QuantityState quantityState) {
+    @Override
+    public Boolean setProductQuantityState(UUID productId,
+                                           QuantityState quantityState) {
         SetProductQuantityStateRequest request = SetProductQuantityStateRequest.builder()
                 .productId(productId)
                 .quantityState(quantityState)
@@ -90,8 +84,8 @@ public class ShoppingStoreController {
     }
 
     // Получить сведения по товару из БД.
-    @GetMapping("/{productId}")
-    public ProductDto getProduct(@PathVariable UUID productId) {
+    @Override
+    public ProductDto getProduct(UUID productId) {
         log.info("start getProduct productId={}", productId);
 
         ProductDto result = shoppingStoreService.getProduct(productId);
