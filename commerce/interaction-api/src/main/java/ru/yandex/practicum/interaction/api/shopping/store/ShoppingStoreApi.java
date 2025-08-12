@@ -31,7 +31,7 @@ public interface ShoppingStoreApi {
 
     // Удалить товар из ассортимента магазина. Функция для менеджерского состава.
     @PostMapping("/removeProductFromStore")
-    public Boolean deleteProduct(@RequestBody UUID productId);
+    Boolean deleteProduct(@RequestBody UUID productId);
 
     // Установка статуса по товару. API вызывается со стороны склада.
     @PostMapping("/quantityState")
