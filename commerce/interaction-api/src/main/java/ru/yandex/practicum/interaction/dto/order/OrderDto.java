@@ -1,6 +1,5 @@
 package ru.yandex.practicum.interaction.dto.order;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AccessLevel;
