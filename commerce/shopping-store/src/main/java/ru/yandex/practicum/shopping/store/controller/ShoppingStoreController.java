@@ -11,6 +11,7 @@ import ru.yandex.practicum.interaction.dto.shopping.store.ProductDto;
 import ru.yandex.practicum.interaction.dto.shopping.store.ProductPageDto;
 import ru.yandex.practicum.interaction.dto.shopping.store.QuantityState;
 import ru.yandex.practicum.interaction.dto.shopping.store.SetProductQuantityStateRequest;
+import ru.yandex.practicum.logging.Logging;
 import ru.yandex.practicum.shopping.store.service.ShoppingStoreService;
 
 import java.util.UUID;
@@ -24,73 +25,51 @@ public class ShoppingStoreController implements ShoppingStoreApi {
 
     // Получение списка товаров по типу в пагинированном виде
     @Override
+    @Logging
     public ProductPageDto getProductsByCategory(ProductCategory category, Pageable pageable) {
-        log.info("start getProductsByCategory category={}, pageable={}", category, pageable);
-
-        ProductPageDto result = shoppingStoreService.getProductsByCategory(category, pageable);
-
-        log.info("success getProductsByCategory category={}, pageable={}, result={}", category, pageable, result);
-        return result;
+        return shoppingStoreService.getProductsByCategory(category, pageable);
     }
 
     // Создание нового товара в ассортименте
     @Override
+    @Logging
     public ProductDto createProduct(ProductDto productDto) {
-        log.info("start createProduct productDto={}", productDto);
-
-        ProductDto result = shoppingStoreService.createProduct(productDto);
-
-        log.info("success createProduct result={}", result);
-        return result;
+        return shoppingStoreService.createProduct(productDto);
     }
 
 
     // Обновление товара в ассортименте, например уточнение описания, характеристик и т.д.
     @Override
+    @Logging
     public ProductDto updateProduct(ProductDto productDto) {
-        log.info("start updateProduct productDto={}", productDto);
-
-        ProductDto result = shoppingStoreService.updateProduct(productDto);
-
-        log.info("success updateProduct productDto={}, result={}", productDto, result);
-        return result;
+        return shoppingStoreService.updateProduct(productDto);
     }
 
     // Удалить товар из ассортимента магазина. Функция для менеджерского состава.
     @Override
+    @Logging
     public Boolean deleteProduct(UUID productId) {
-        log.info("start deleteProduct productId={}", productId);
-
-        Boolean result = shoppingStoreService.deleteProduct(productId);
-
-        log.info("end deleteProduct productId={}, result={}", productId, result);
-        return result;
+        return shoppingStoreService.deleteProduct(productId);
     }
 
     // Установка статуса по товару. API вызывается со стороны склада.
     @Override
+    @Logging
     public Boolean setProductQuantityState(UUID productId,
                                            QuantityState quantityState) {
+
         SetProductQuantityStateRequest request = SetProductQuantityStateRequest.builder()
                 .productId(productId)
                 .quantityState(quantityState)
                 .build();
-        log.info("start setProductQuantityState request={}", request);
 
-        Boolean result = shoppingStoreService.setProductQuantityState(request);
-
-        log.info("end setProductQuantityState request={}, result={}", request, result);
-        return result;
+        return shoppingStoreService.setProductQuantityState(request);
     }
 
     // Получить сведения по товару из БД.
     @Override
+    @Logging
     public ProductDto getProduct(UUID productId) {
-        log.info("start getProduct productId={}", productId);
-
-        ProductDto result = shoppingStoreService.getProduct(productId);
-
-        log.info("success getProduct productId={}, result={}", productId, result);
-        return result;
+        return shoppingStoreService.getProduct(productId);
     }
 }

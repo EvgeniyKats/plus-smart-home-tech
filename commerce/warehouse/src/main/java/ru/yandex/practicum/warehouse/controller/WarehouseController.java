@@ -11,6 +11,7 @@ import ru.yandex.practicum.interaction.dto.warehouse.AddProductToWarehouseReques
 import ru.yandex.practicum.interaction.dto.warehouse.AddressDto;
 import ru.yandex.practicum.interaction.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.interaction.dto.warehouse.NewProductInWarehouseRequest;
+import ru.yandex.practicum.logging.Logging;
 import ru.yandex.practicum.warehouse.service.WarehouseService;
 
 @RestController
@@ -23,35 +24,29 @@ public class WarehouseController implements WarehouseApi {
 
     // Добавить новый товар на склад.
     @Override
+    @Logging
     public void newProduct(NewProductInWarehouseRequest newRequest) {
-        log.info("start newProduct newRequest={}", newRequest);
         warehouseService.newProduct(newRequest);
-        log.info("success newProduct newRequest={}", newRequest);
     }
 
     // Предварительно проверить что количество товаров на складе достаточно для данной корзины товаров.
     @Override
+    @Logging
     public BookedProductsDto checkProducts(ShoppingCartDto shoppingCartDto) {
-        log.info("start checkProducts shoppingCartDto={}", shoppingCartDto);
-        BookedProductsDto result = warehouseService.checkProducts(shoppingCartDto);
-        log.info("success checkProducts shoppingCartDto={}, result={}", shoppingCartDto, result);
-        return result;
+        return warehouseService.checkProducts(shoppingCartDto);
     }
 
     // Принять товар на склад.
     @Override
+    @Logging
     public void addProduct(AddProductToWarehouseRequest addRequest) {
-        log.info("start addProduct addRequest={}", addRequest);
         warehouseService.addProduct(addRequest);
-        log.info("success addProduct addRequest={}", addRequest);
     }
 
     // Предоставить адрес склада для расчёта доставки.
     @Override
+    @Logging
     public AddressDto getAddress() {
-        log.info("start getAddress");
-        AddressDto result = warehouseService.getAddress();
-        log.info("success getAddress result={}", result);
-        return result;
+        return warehouseService.getAddress();
     }
 }

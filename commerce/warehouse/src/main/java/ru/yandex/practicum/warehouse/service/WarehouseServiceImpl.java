@@ -1,6 +1,7 @@
 package ru.yandex.practicum.warehouse.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.event.Level;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.interaction.dto.shopping.cart.ShoppingCartDto;
@@ -11,12 +12,13 @@ import ru.yandex.practicum.interaction.dto.warehouse.NewProductInWarehouseReques
 import ru.yandex.practicum.interaction.exception.warehouse.NoSpecifiedProductInWarehouseException;
 import ru.yandex.practicum.interaction.exception.warehouse.ProductInShoppingCartLowQuantityInWarehouseException;
 import ru.yandex.practicum.interaction.exception.warehouse.SpecifiedProductAlreadyInWarehouseException;
+import ru.yandex.practicum.interaction.util.ProductNotEnough;
+import ru.yandex.practicum.logging.Logging;
 import ru.yandex.practicum.warehouse.mapper.AddressMapper;
 import ru.yandex.practicum.warehouse.mapper.ProductMapper;
 import ru.yandex.practicum.warehouse.model.Address;
 import ru.yandex.practicum.warehouse.model.Dimension;
 import ru.yandex.practicum.warehouse.model.Product;
-import ru.yandex.practicum.interaction.util.ProductNotEnough;
 import ru.yandex.practicum.warehouse.repository.AddressRepository;
 import ru.yandex.practicum.warehouse.repository.ProductRepository;
 
@@ -54,11 +56,10 @@ public class WarehouseServiceImpl implements WarehouseService {
         this.addressId = addressRepository.save(Address.createTestAddress(address[randomIdx])).getId();
     }
 
-    @Transactional
     @Override
+    @Transactional
+    @Logging(Level.TRACE)
     public void newProduct(NewProductInWarehouseRequest newRequest) {
-        log.trace("start newProduct newRequest={}", newRequest);
-
         UUID productId = newRequest.getProductId();
 
         // проверка, есть ли такой товар уже на складе
@@ -74,9 +75,8 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
+    @Logging(Level.TRACE)
     public BookedProductsDto checkProducts(ShoppingCartDto shoppingCartDto) {
-        log.trace("start checkProducts shoppingCartDto={}", shoppingCartDto);
-
         // Загружаем из БД товары для проверки
         Set<UUID> ids = shoppingCartDto.getProducts().keySet();
         Map<UUID, Product> productById = productRepository.findAllAsMapByIds(ids);
@@ -144,15 +144,13 @@ public class WarehouseServiceImpl implements WarehouseService {
             throw new ProductInShoppingCartLowQuantityInWarehouseException(productsNotEnough);
         }
 
-        log.trace("end checkProducts shoppingCartDto={}, bookedProductsDto={}", shoppingCartDto, result);
         return result;
     }
 
-    @Transactional
     @Override
+    @Transactional
+    @Logging(Level.TRACE)
     public void addProduct(AddProductToWarehouseRequest addRequest) {
-        log.trace("start addProduct addRequest={}", addRequest);
-
         UUID productId = addRequest.getProductId();
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> {
@@ -165,7 +163,6 @@ public class WarehouseServiceImpl implements WarehouseService {
         Integer newQuantity = currentQuantity + addQuantity;
 
         product.setQuantity(newQuantity);
-
         log.trace("end addProduct addRequest={}, newQuantity={}", addRequest, newQuantity);
     }
 
@@ -173,12 +170,10 @@ public class WarehouseServiceImpl implements WarehouseService {
      * @implNote Сейчас возвращаются временные данные
      */
     @Override
+    @Logging(Level.TRACE)
     public AddressDto getAddress() {
-        log.trace("start getAddress");
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new IllegalStateException("Адрес не найден в БД, id = " + addressId));
-        AddressDto addressDto = addressMapper.toAddressDto(address);
-        log.trace("end getAddress address={}", addressDto);
-        return addressDto;
+        return addressMapper.toAddressDto(address);
     }
 }

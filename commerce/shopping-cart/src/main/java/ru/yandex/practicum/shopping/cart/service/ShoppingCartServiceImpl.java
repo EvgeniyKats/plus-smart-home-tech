@@ -2,6 +2,7 @@ package ru.yandex.practicum.shopping.cart.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.event.Level;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.interaction.client.feign.warehouse.WarehouseClientFeign;
@@ -12,6 +13,7 @@ import ru.yandex.practicum.interaction.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.interaction.exception.shopping.cart.NoProductsInShoppingCartException;
 import ru.yandex.practicum.interaction.exception.shopping.cart.NotAuthorizedUserException;
 import ru.yandex.practicum.interaction.exception.shopping.cart.ShoppingCartDeactivateException;
+import ru.yandex.practicum.logging.Logging;
 import ru.yandex.practicum.shopping.cart.mapper.ShoppingCartMapper;
 import ru.yandex.practicum.shopping.cart.model.ShoppingCart;
 import ru.yandex.practicum.shopping.cart.model.ShoppingCartStatus;
@@ -33,21 +35,20 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartMapper shoppingCartMapper;
     private final WarehouseClientFeign warehouseClientFeign;
 
-    @Transactional
     @Override
+    @Transactional
+    @Logging(Level.TRACE)
     public ShoppingCartDto getShoppingCart(String username) {
-        log.trace("start getShoppingCart username={}", username);
         validateUsername(username);
         ShoppingCart shoppingCart = getOrCreateShoppingCartByUsername(username);
 
-        log.trace("end getShoppingCart username={}", username);
         return shoppingCartMapper.toShoppingCartDto(shoppingCart);
     }
 
-    @Transactional
     @Override
+    @Transactional
+    @Logging(Level.TRACE)
     public ShoppingCartDto addProductsToShoppingCart(Map<UUID, Integer> products, String username) {
-        log.trace("start addProductsToShoppingCart username={}, products={}", username, products);
         validateUsername(username);
         ShoppingCart shoppingCart = getOrCreateShoppingCartByUsername(username);
 
@@ -60,26 +61,24 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         // добавление товаров в корзину
         products.forEach((id, count) -> shoppingCart.getProducts().merge(id, count, Integer::sum));
 
-        log.trace("end addProductsToShoppingCart username={}, products={}", username, products);
         return shoppingCartMapper.toShoppingCartDto(shoppingCart);
     }
 
-    @Transactional
     @Override
+    @Transactional
+    @Logging(Level.TRACE)
     public void deactivateShoppingCart(String username) {
-        log.trace("start deactivateShoppingCart username={}", username);
         validateUsername(username);
         ShoppingCart shoppingCart = getOrCreateShoppingCartByUsername(username);
 
         // деактивация корзины
         shoppingCart.setStatus(ShoppingCartStatus.DEACTIVATE);
-        log.trace("end deactivateShoppingCart username={}", username);
     }
 
-    @Transactional
     @Override
+    @Transactional
+    @Logging(Level.TRACE)
     public ShoppingCartDto removeProductsFromShoppingCart(List<UUID> productsIds, String username) {
-        log.trace("start removeProductsFromShoppingCart username={}, productsIds={}", username, productsIds);
         validateUsername(username);
 
         ShoppingCart shoppingCart = getOrCreateShoppingCartByUsername(username);
@@ -93,14 +92,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         // удаление товаров
         productsIds.forEach(id -> shoppingCart.getProducts().remove(id));
 
-        log.trace("end removeProductsFromShoppingCart username={}, productsIds={}", username, productsIds);
         return shoppingCartMapper.toShoppingCartDto(shoppingCart);
     }
 
-    @Transactional
     @Override
+    @Transactional
+    @Logging(Level.TRACE)
     public ShoppingCartDto changeProductsQuantityInShoppingCart(ChangeProductQuantityRequest request, String username) {
-        log.trace("start changeProductsQuantityInShoppingCart username={}, request={}", username, request);
         validateUsername(username);
 
         ShoppingCart shoppingCart = getOrCreateShoppingCartByUsername(username);
@@ -118,7 +116,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         // изменение товаров
         shoppingCart.getProducts().forEach((id, count) -> shoppingCart.getProducts().put(id, count));
 
-        log.trace("end changeProductsQuantityInShoppingCart username={}, request={}", username, request);
         return shoppingCartMapper.toShoppingCartDto(shoppingCart);
     }
 
