@@ -40,7 +40,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Logging(Level.TRACE)
     public ShoppingCartDto getShoppingCart(String username) {
         validateUsername(username);
-        ShoppingCart shoppingCart = getOrCreateShoppingCartByUsername(username);
+        ShoppingCart shoppingCart = shoppingCartRepository.getOrCreateByUsername(username, true);
 
         return shoppingCartMapper.toShoppingCartDto(shoppingCart);
     }
@@ -50,7 +50,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Logging(Level.TRACE)
     public ShoppingCartDto addProductsToShoppingCart(Map<UUID, Integer> products, String username) {
         validateUsername(username);
-        ShoppingCart shoppingCart = getOrCreateShoppingCartByUsername(username);
+        ShoppingCart shoppingCart = shoppingCartRepository.getOrCreateByUsername(username, true);
 
         // проверка возможности модификации корзины
         validateShoppingCartModifiable(shoppingCart);
@@ -69,7 +69,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Logging(Level.TRACE)
     public void deactivateShoppingCart(String username) {
         validateUsername(username);
-        ShoppingCart shoppingCart = getOrCreateShoppingCartByUsername(username);
+        ShoppingCart shoppingCart = shoppingCartRepository.getOrCreateByUsername(username, false);
 
         // деактивация корзины
         shoppingCart.setStatus(ShoppingCartStatus.DEACTIVATE);
@@ -81,7 +81,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public ShoppingCartDto removeProductsFromShoppingCart(List<UUID> productsIds, String username) {
         validateUsername(username);
 
-        ShoppingCart shoppingCart = getOrCreateShoppingCartByUsername(username);
+        ShoppingCart shoppingCart = shoppingCartRepository.getOrCreateByUsername(username, true);
 
         // проверка возможности модификации корзины
         validateShoppingCartModifiable(shoppingCart);
@@ -101,7 +101,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public ShoppingCartDto changeProductsQuantityInShoppingCart(ChangeProductQuantityRequest request, String username) {
         validateUsername(username);
 
-        ShoppingCart shoppingCart = getOrCreateShoppingCartByUsername(username);
+        ShoppingCart shoppingCart = shoppingCartRepository.getOrCreateByUsername(username, true);
 
         // проверка возможности модификации корзины
         validateShoppingCartModifiable(shoppingCart);
@@ -114,27 +114,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 Map.of(request.getProductId(), request.getNewQuantity()));
 
         // изменение товаров
-        shoppingCart.getProducts().forEach((id, count) -> shoppingCart.getProducts().put(id, count));
+        shoppingCart.getProducts().put(request.getProductId(), request.getNewQuantity());
 
         return shoppingCartMapper.toShoppingCartDto(shoppingCart);
-    }
-
-    /**
-     * Если корзина для пользователя существует в БД, вернёт существующую
-     * или создаст новую пустую корзину и сохранит её в БД
-     */
-    private ShoppingCart getOrCreateShoppingCartByUsername(String username) {
-        return shoppingCartRepository.findByUsername(username)
-                .orElseGet(() -> {
-
-                    ShoppingCart cart = ShoppingCart.builder()
-                            .username(username)
-                            .build();
-                    shoppingCartRepository.save(cart);
-
-                    log.trace("Создана новая корзина id={}, username={}", cart.getShoppingCartId(), cart.getUsername());
-                    return cart;
-                });
     }
 
     /**
