@@ -84,6 +84,13 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
+
+        <!-- AOP логирование -->
+        <dependency>
+            <groupId>ru.yandex.practicum</groupId>
+            <artifactId>logging-starter</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
