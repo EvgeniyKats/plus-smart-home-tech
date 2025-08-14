@@ -11,8 +11,10 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
 @Aspect
@@ -28,19 +30,25 @@ public class LoggingAspect {
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
         // Уровень логирования
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-        Logging logging = methodSignature.getMethod().getAnnotation(Logging.class);
-        final Level loggingLevel = logging.level();
+        Method method = methodSignature.getMethod();
+        Logging logging = AnnotationUtils.findAnnotation(method, Logging.class);
+
+        if (logging == null) {
+            return joinPoint.proceed();
+        }
+
+        Level loggingLevel = logging.level();
 
         // Логирование перед методом
         Signature signature = joinPoint.getSignature();
         Object[] args = joinPoint.getArgs();
 
-        String msgStart = createMessage(signature, true, args);
+        String msgStart = createStartMessage(signature, args);
         writeToLog(msgStart, loggingLevel);
 
         // Логирование после метода
         Object result = joinPoint.proceed();
-        String msgEnd = createMessage(signature, false, result);
+        String msgEnd = createEndMessage(signature, result);
         writeToLog(msgEnd, loggingLevel);
 
         return result;
@@ -53,9 +61,12 @@ public class LoggingAspect {
         log.error("{} exception {}()", typeName, methodName, exception);
     }
 
-    private String createMessage(Signature signature, boolean start, Object... args) {
-        String position = start ? ">>" : "<<";
-        return String.format("%s: %s %s", signature, position, Arrays.toString(args));
+    private String createStartMessage(Signature signature, Object[] args) {
+        return String.format("%s: >> %s", signature, Arrays.toString(args));
+    }
+
+    private String createEndMessage(Signature signature, Object arg) {
+        return String.format("%s: << %s", signature, arg.toString());
     }
 
     private void writeToLog(String msg, final Level level) {
