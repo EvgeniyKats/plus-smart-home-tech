@@ -1,6 +1,7 @@
 package ru.yandex.practicum.interaction.api.order;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,7 +18,7 @@ public interface OrderApi {
 
     // Получить заказы пользователя.
     @GetMapping
-    List<OrderDto> getUserOrders(@RequestParam String username);
+    List<OrderDto> getUserOrders(@RequestParam String username, Pageable pageable);
 
     // Создать новый заказ в системе.
     @PutMapping
@@ -29,7 +30,7 @@ public interface OrderApi {
 
     // Оплата заказа.
     @PostMapping("/payment")
-    OrderDto payment(@RequestBody UUID orderId);
+    OrderDto setPaymentSuccess(@RequestBody UUID orderId);
 
     // Оплата заказа произошла с ошибкой.
     @PostMapping("/payment/failed")
@@ -37,7 +38,7 @@ public interface OrderApi {
 
     // Доставка заказа.
     @PostMapping("/delivery")
-    OrderDto delivery(@RequestBody UUID orderId);
+    OrderDto setDeliverySuccess(@RequestBody UUID orderId);
 
     // Доставка заказа произошла с ошибкой.
     @PostMapping("/delivery/failed")
@@ -45,7 +46,7 @@ public interface OrderApi {
 
     // Завершение заказа.
     @PostMapping("/completed")
-    OrderDto complete(@RequestBody UUID orderId);
+    OrderDto setOrderCompleted(@RequestBody UUID orderId);
 
     // Расчёт итоговой стоимости заказа.
     @PostMapping("/calculate/total")
@@ -57,7 +58,7 @@ public interface OrderApi {
 
     // Сборка заказа.
     @PostMapping("/assembly")
-    OrderDto assembly(@RequestBody UUID orderId);
+    OrderDto setAssemblySuccess(@RequestBody UUID orderId);
 
     // Сборка заказа произошла с ошибкой.
     @PostMapping("/assembly/failed")

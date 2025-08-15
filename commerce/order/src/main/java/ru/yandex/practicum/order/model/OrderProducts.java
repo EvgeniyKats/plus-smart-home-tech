@@ -35,7 +35,7 @@ import java.util.UUID;
 public class OrderProducts {
 
     // Стоимость товаров в заказе.
-    @Column(name = "product_price", precision = 19, scale = 2, nullable = false)
+    @Column(name = "product_price", precision = 19, scale = 2)
     BigDecimal productPrice;
 
     // Отображение идентификатора товара на отобранное количество.

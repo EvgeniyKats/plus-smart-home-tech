@@ -45,11 +45,11 @@ public class Order {
     UUID orderId;
 
     // Идентификатор корзины.
-    @Column(name = "shopping_cart_id", nullable = false)
+    @Column(name = "shopping_cart_id")
     UUID shoppingCartId;
 
     // Идентификатор оплаты.
-    @Column(name = "payment_id", nullable = false)
+    @Column(name = "payment_id")
     UUID paymentId;
 
     @Embedded
@@ -59,11 +59,12 @@ public class Order {
     OrderProducts products;
 
     // Общая стоимость.
-    @Column(name = "total_price", precision = 19, scale = 2, nullable = false)
+    @Column(name = "total_price", precision = 19, scale = 2)
     BigDecimal totalPrice;
 
     // Статус заказа.
     @Enumerated(value = EnumType.STRING)
     @Column(name = "state", nullable = false)
-    OrderState state;
+    @Builder.Default
+    OrderState state = OrderState.NEW;
 }

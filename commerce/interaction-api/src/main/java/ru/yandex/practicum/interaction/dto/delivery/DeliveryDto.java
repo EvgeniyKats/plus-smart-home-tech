@@ -16,7 +16,6 @@ import java.util.UUID;
 public class DeliveryDto {
 
     // Идентификатор доставки.
-    @NotNull
     UUID deliveryId;
 
     // Адрес отправителя (склад).

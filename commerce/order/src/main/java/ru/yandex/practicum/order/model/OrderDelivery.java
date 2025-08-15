@@ -29,22 +29,22 @@ import java.util.UUID;
 public class OrderDelivery {
 
     // Идентификатор доставки.
-    @Column(name = "delivery_id", nullable = false)
+    @Column(name = "delivery_id")
     UUID deliveryId;
 
     // Общий вес доставки.
-    @Column(name = "delivery_weight", nullable = false)
+    @Column(name = "delivery_weight")
     Double deliveryWeight;
 
     // Общий объём доставки.
-    @Column(name = "delivery_volume", nullable = false)
+    @Column(name = "delivery_volume")
     Double deliveryVolume;
 
     // Признак хрупкости заказа.
-    @Column(name = "fragile", nullable = false)
+    @Column(name = "fragile")
     Boolean fragile;
 
     // Стоимость доставки.
-    @Column(name = "delivery_price", precision = 19, scale = 2, nullable = false)
+    @Column(name = "delivery_price", precision = 19, scale = 2)
     BigDecimal deliveryPrice;
 }

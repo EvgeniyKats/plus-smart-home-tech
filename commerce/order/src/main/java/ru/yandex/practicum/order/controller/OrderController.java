@@ -2,6 +2,7 @@ package ru.yandex.practicum.order.controller;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,8 +25,8 @@ public class OrderController implements OrderApi {
 
     @Override
     @Logging
-    public List<OrderDto> getUserOrders(String username) {
-        return orderService.getUserOrders(username);
+    public List<OrderDto> getUserOrders(String username, Pageable pageable) {
+        return orderService.getUserOrders(username, pageable);
     }
 
     @Override
@@ -42,8 +43,8 @@ public class OrderController implements OrderApi {
 
     @Override
     @Logging
-    public OrderDto payment(UUID orderId) {
-        return orderService.payment(orderId);
+    public OrderDto setPaymentSuccess(UUID orderId) {
+        return orderService.setPaymentSuccess(orderId);
     }
 
     @Override
@@ -54,8 +55,8 @@ public class OrderController implements OrderApi {
 
     @Override
     @Logging
-    public OrderDto delivery(UUID orderId) {
-        return orderService.delivery(orderId);
+    public OrderDto setDeliverySuccess(UUID orderId) {
+        return orderService.setDeliverySuccess(orderId);
     }
 
     @Override
@@ -66,8 +67,8 @@ public class OrderController implements OrderApi {
 
     @Override
     @Logging
-    public OrderDto complete(UUID orderId) {
-        return orderService.complete(orderId);
+    public OrderDto setOrderCompleted(UUID orderId) {
+        return orderService.setOrderCompleted(orderId);
     }
 
     @Override
@@ -84,8 +85,8 @@ public class OrderController implements OrderApi {
 
     @Override
     @Logging
-    public OrderDto assembly(UUID orderId) {
-        return orderService.assembly(orderId);
+    public OrderDto setAssemblySuccess(UUID orderId) {
+        return orderService.setAssemblySuccess(orderId);
     }
 
     @Override
