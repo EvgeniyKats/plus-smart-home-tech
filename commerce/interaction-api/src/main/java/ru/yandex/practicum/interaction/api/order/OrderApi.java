@@ -29,16 +29,20 @@ public interface OrderApi {
     OrderDto returnOrder(@Valid @RequestBody ProductReturnRequest productReturnRequest);
 
     // Оплата заказа.
-    @PostMapping("/payment")
+    @PostMapping("/payment/success")
     OrderDto setPaymentSuccess(@RequestBody UUID orderId);
 
     // Оплата заказа произошла с ошибкой.
     @PostMapping("/payment/failed")
     OrderDto setPaymentFailed(@RequestBody UUID orderId);
 
-    // Доставка заказа.
-    @PostMapping("/delivery")
+    // Доставка заказа произошла успешно до ПВЗ.
+    @PostMapping("/delivery/success")
     OrderDto setDeliverySuccess(@RequestBody UUID orderId);
+
+    // Заказ был получен покупателем из доставки
+    @PostMapping("/delivery/received")
+    OrderDto setDeliveryDone(@RequestBody UUID orderId);
 
     // Доставка заказа произошла с ошибкой.
     @PostMapping("/delivery/failed")
@@ -57,7 +61,7 @@ public interface OrderApi {
     OrderDto calculateDeliveryCost(@RequestBody UUID orderId);
 
     // Сборка заказа.
-    @PostMapping("/assembly")
+    @PostMapping("/assembly/success")
     OrderDto setAssemblySuccess(@RequestBody UUID orderId);
 
     // Сборка заказа произошла с ошибкой.

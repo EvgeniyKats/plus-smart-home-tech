@@ -48,7 +48,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     @Transactional
     @Logging(Level.TRACE)
-    public ShoppingCartDto addProductsToShoppingCart(Map<UUID, Integer> products, String username) {
+    public ShoppingCartDto addProductsToShoppingCart(Map<UUID, Long> products, String username) {
         validateUsername(username);
         ShoppingCart shoppingCart = shoppingCartRepository.getOrCreateByUsername(username, true);
 
@@ -59,7 +59,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         checkProductsInWarehouseAvailable(shoppingCart.getShoppingCartId(), products);
 
         // добавление товаров в корзину
-        products.forEach((id, count) -> shoppingCart.getProducts().merge(id, count, Integer::sum));
+        products.forEach((id, count) -> shoppingCart.getProducts().merge(id, count, Long::sum));
 
         return shoppingCartMapper.toShoppingCartDto(shoppingCart);
     }
@@ -191,7 +191,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
      * @param products       - продукты для проверки на складе
      * @throws WarehouseFallbackException если warehouse недоступен
      */
-    private void checkProductsInWarehouseAvailable(UUID shoppingCartId, Map<UUID, Integer> products) {
+    private void checkProductsInWarehouseAvailable(UUID shoppingCartId, Map<UUID, Long> products) {
         // проверка наличия на складе
         ShoppingCartDto shoppingCartDto = ShoppingCartDto.builder()
                 .shoppingCartId(shoppingCartId)

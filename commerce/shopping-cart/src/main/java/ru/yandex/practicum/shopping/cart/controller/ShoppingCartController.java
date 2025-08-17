@@ -34,7 +34,7 @@ public class ShoppingCartController implements ShoppingCartApi {
     @Logging
     @Override
     public ShoppingCartDto addProductsToShoppingCart(
-            Map<UUID, Integer> products, // Отображение идентификатора товара на отобранное количество
+            Map<UUID, Long> products, // Отображение идентификатора товара на отобранное количество
             String username) {
         return shoppingCartService.addProductsToShoppingCart(products, username);
     }

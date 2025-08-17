@@ -1,5 +1,6 @@
 package ru.yandex.practicum.warehouse.controller;
 
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -9,10 +10,15 @@ import ru.yandex.practicum.interaction.api.warehouse.WarehouseApi;
 import ru.yandex.practicum.interaction.dto.shopping.cart.ShoppingCartDto;
 import ru.yandex.practicum.interaction.dto.warehouse.AddProductToWarehouseRequest;
 import ru.yandex.practicum.interaction.dto.warehouse.AddressDto;
+import ru.yandex.practicum.interaction.dto.warehouse.AssemblyProductsForOrderRequest;
 import ru.yandex.practicum.interaction.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.interaction.dto.warehouse.NewProductInWarehouseRequest;
+import ru.yandex.practicum.interaction.dto.warehouse.ShippedToDeliveryRequest;
 import ru.yandex.practicum.logging.Logging;
 import ru.yandex.practicum.warehouse.service.WarehouseService;
+
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/warehouse")
@@ -41,6 +47,27 @@ public class WarehouseController implements WarehouseApi {
     @Logging
     public void addProduct(AddProductToWarehouseRequest addRequest) {
         warehouseService.addProduct(addRequest);
+    }
+
+    // Передать товары в доставку
+    @Override
+    @Logging
+    public void shipped(ShippedToDeliveryRequest shippedToDeliveryRequest) {
+        warehouseService.shipped(shippedToDeliveryRequest);
+    }
+
+    // Принять возврат товаров на склад.
+    @Override
+    @Logging
+    public void returnProducts(Map<UUID, Long> products) {
+        warehouseService.returnProducts(products);
+    }
+
+    // Собрать товары к заказу для подготовки к отправке.
+    @Override
+    @Logging
+    public BookedProductsDto assemblyProducts(AssemblyProductsForOrderRequest assemblyProductsForOrderRequest) {
+        return warehouseService.assemblyProducts(assemblyProductsForOrderRequest);
     }
 
     // Предоставить адрес склада для расчёта доставки.

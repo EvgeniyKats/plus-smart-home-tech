@@ -54,5 +54,5 @@ public class Product {
     // Количество товара на складе
     @Column(name = "quantity")
     @Builder.Default
-    Integer quantity = 0;
+    Long quantity = 0L;
 }

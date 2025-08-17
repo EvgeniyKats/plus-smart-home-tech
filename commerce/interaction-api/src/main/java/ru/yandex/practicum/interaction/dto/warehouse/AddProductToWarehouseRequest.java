@@ -22,6 +22,6 @@ public class AddProductToWarehouseRequest {
 
     // Количество единиц товара для добавления на склад
     @NotNull
-    @Min(1)
-    Integer quantity;
+    @Min(1L)
+    Long quantity;
 }

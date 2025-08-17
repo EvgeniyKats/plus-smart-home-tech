@@ -67,6 +67,12 @@ public class OrderController implements OrderApi {
 
     @Override
     @Logging
+    public OrderDto setDeliveryDone(UUID orderId) {
+        return null;
+    }
+
+    @Override
+    @Logging
     public OrderDto setOrderCompleted(UUID orderId) {
         return orderService.setOrderCompleted(orderId);
     }

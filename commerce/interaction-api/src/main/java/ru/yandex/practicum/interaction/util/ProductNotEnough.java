@@ -17,15 +17,15 @@ public class ProductNotEnough {
     UUID productId;
 
     // доступное количество для заказа
-    Integer availableCount;
+    Long availableCount;
 
     // ожидаемое количество для заказа
-    Integer wantedCount;
+    Long wantedCount;
 
     // сколько товаров не хватает на складе
-    Integer differenceCount;
+    Long differenceCount;
 
-    public ProductNotEnough(UUID productId, Integer availableCount, Integer wantedCount) {
+    public ProductNotEnough(UUID productId, Long availableCount, Long wantedCount) {
         this.productId = productId;
         this.availableCount = availableCount;
         this.wantedCount = wantedCount;

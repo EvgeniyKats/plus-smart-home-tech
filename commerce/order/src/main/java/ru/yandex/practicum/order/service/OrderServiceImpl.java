@@ -119,6 +119,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Logging(Level.TRACE)
+    public OrderDto setDeliveryDone(UUID orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(NoOrderFoundException::new);
+
+        order.setState(OrderState.DONE);
+
+        return orderMapper.toOrderDto(order);
+    }
+
+    @Override
     @Transactional
     @Logging(Level.TRACE)
     public OrderDto setDeliveryFailed(UUID orderId) {

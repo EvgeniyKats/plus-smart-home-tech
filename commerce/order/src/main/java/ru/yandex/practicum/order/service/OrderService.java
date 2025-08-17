@@ -25,8 +25,11 @@ public interface OrderService {
     // Оплата заказа произошла с ошибкой.
     OrderDto setPaymentFailed(UUID orderId);
 
-    // Доставка заказа.
+    // Доставка заказа произошла успешно до ПВЗ.
     OrderDto setDeliverySuccess(UUID orderId);
+
+    // Заказ был получен покупателем из доставки
+    OrderDto setDeliveryDone(UUID orderId);
 
     // Доставка заказа произошла с ошибкой.
     OrderDto setDeliveryFailed(UUID orderId);

@@ -14,7 +14,7 @@ public interface ShoppingCartService {
 
     // Добавить товар в корзину
     ShoppingCartDto addProductsToShoppingCart(
-            Map<UUID, Integer> products, // Отображение идентификатора товара на отобранное количество
+            Map<UUID, Long> products, // Отображение идентификатора товара на отобранное количество
             String username);
 
     // Деактивация корзины товаров для пользователя

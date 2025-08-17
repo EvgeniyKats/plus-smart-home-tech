@@ -20,7 +20,7 @@ public class ShoppingCartFallback implements ShoppingCartClientFeign {
     }
 
     @Override
-    public ShoppingCartDto addProductsToShoppingCart(Map<UUID, Integer> products, String username) {
+    public ShoppingCartDto addProductsToShoppingCart(Map<UUID, Long> products, String username) {
         ShoppingCartFallbackException cause = new ShoppingCartFallbackException();
         log.error(cause.getMessage(), cause);
         throw cause;
