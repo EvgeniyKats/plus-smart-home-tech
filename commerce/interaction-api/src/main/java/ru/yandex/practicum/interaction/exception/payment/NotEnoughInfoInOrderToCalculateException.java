@@ -7,4 +7,9 @@ public class NotEnoughInfoInOrderToCalculateException extends BaseServiceExcepti
         this.httpStatus = "400";
         this.userMessage = "Недостаточно информации в заказе для расчёта";
     }
+
+    public NotEnoughInfoInOrderToCalculateException(String userMessage) {
+        this.httpStatus = "400";
+        this.userMessage = userMessage;
+    }
 }

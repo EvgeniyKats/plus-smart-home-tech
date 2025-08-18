@@ -17,8 +17,14 @@ import ru.yandex.practicum.shopping.store.mapper.ProductMapper;
 import ru.yandex.practicum.shopping.store.model.Product;
 import ru.yandex.practicum.shopping.store.repository.ProductRepository;
 
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -39,6 +45,24 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
                 .toList();
 
         return new ProductPageDto(productsDto, pageable.getSort());
+    }
+
+    @Override
+    @Logging(Level.TRACE)
+    public Map<UUID, BigDecimal> getProductsPrice(Collection<UUID> productIdsToGetPrice) {
+        List<Product> productsFound = productRepository.findAllById(productIdsToGetPrice);
+
+        // проверяем, все ли товары нашлись в БД
+        if (productsFound.size() != productIdsToGetPrice.size()) {
+            // notFoundIds изначально содержит все запрошенные id, затем удаляются найденные id
+            Set<UUID> notFoundIds = new HashSet<>(productIdsToGetPrice);
+
+            productsFound.forEach(product -> notFoundIds.remove(product.getProductId()));
+
+            throw new ProductNotFoundException(notFoundIds);
+        }
+
+        return productsFound.stream().collect(Collectors.toMap(Product::getProductId, Product::getPrice));
     }
 
     @Override

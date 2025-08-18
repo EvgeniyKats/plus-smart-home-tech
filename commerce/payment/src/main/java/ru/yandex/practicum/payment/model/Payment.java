@@ -2,6 +2,8 @@ package ru.yandex.practicum.payment.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import ru.yandex.practicum.interaction.dto.payment.PaymentState;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -39,6 +42,10 @@ public class Payment {
     @Column(name = "id")
     UUID paymentId;
 
+    // Идентификатор заказа.
+    @Column(name = "orderId")
+    UUID orderId;
+
     // Общая стоимость.
     @Column(name = "total", scale = 2, precision = 19, nullable = false)
     BigDecimal totalPayment;
@@ -50,4 +57,10 @@ public class Payment {
     // Стоимость налога.
     @Column(name = "fee", scale = 2, precision = 19, nullable = false)
     BigDecimal feeTotal;
+
+    // Статус платежа.
+    @Column(name = "payment_state")
+    @Enumerated(value = EnumType.STRING)
+    @Builder.Default
+    PaymentState paymentState = PaymentState.PENDING;
 }

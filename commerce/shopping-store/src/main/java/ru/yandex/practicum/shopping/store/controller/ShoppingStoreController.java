@@ -14,6 +14,9 @@ import ru.yandex.practicum.interaction.dto.shopping.store.SetProductQuantityStat
 import ru.yandex.practicum.logging.Logging;
 import ru.yandex.practicum.shopping.store.service.ShoppingStoreService;
 
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -28,6 +31,11 @@ public class ShoppingStoreController implements ShoppingStoreApi {
     @Logging
     public ProductPageDto getProductsByCategory(ProductCategory category, Pageable pageable) {
         return shoppingStoreService.getProductsByCategory(category, pageable);
+    }
+
+    @Override
+    public Map<UUID, BigDecimal> getProductsPrice(Collection<UUID> productIds) {
+        return shoppingStoreService.getProductsPrice(productIds);
     }
 
     // Создание нового товара в ассортименте

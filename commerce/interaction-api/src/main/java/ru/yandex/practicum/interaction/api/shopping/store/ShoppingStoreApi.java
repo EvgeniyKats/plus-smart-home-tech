@@ -13,12 +13,19 @@ import ru.yandex.practicum.interaction.dto.shopping.store.ProductDto;
 import ru.yandex.practicum.interaction.dto.shopping.store.ProductPageDto;
 import ru.yandex.practicum.interaction.dto.shopping.store.QuantityState;
 
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
 public interface ShoppingStoreApi {
     // Получение списка товаров по типу в пагинированном виде
     @GetMapping
     ProductPageDto getProductsByCategory(@RequestParam ProductCategory category, Pageable pageable);
+
+    // Получение отображения идентификатора товара на его цену
+    @GetMapping
+    Map<UUID, BigDecimal> getProductsPrice(@RequestBody Collection<UUID> productIds);
 
     // Создание нового товара в ассортименте
     @PutMapping
