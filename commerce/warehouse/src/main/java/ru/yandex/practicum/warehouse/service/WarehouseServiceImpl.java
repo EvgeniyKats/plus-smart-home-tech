@@ -29,6 +29,8 @@ import ru.yandex.practicum.warehouse.repository.OrderBookingRepository;
 import ru.yandex.practicum.warehouse.repository.ProductRepository;
 import ru.yandex.practicum.warehouse.service.param.ResultCheckWarehouseProductsQuantity;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -210,8 +212,8 @@ public class WarehouseServiceImpl implements WarehouseService {
 
         // Начинаем проверку.
         BookedProductsDto bookedProductsDto = BookedProductsDto.builder() // общая информация о товарах для заказа
-                .deliveryVolume(0.0)
-                .deliveryWeight(0.0)
+                .deliveryVolume(new BigDecimal("0.000"))
+                .deliveryWeight(new BigDecimal("0.000"))
                 .fragile(false)
                 .build();
 
@@ -241,15 +243,17 @@ public class WarehouseServiceImpl implements WarehouseService {
             Dimension dimension = product.getDimension();
 
             // Объем
-            Double currentVolume = bookedProductsDto.getDeliveryVolume();
-            Double addVolume = dimension.getHeight() * dimension.getWidth() * dimension.getDepth();
-            Double newVolume = currentVolume + addVolume;
+            BigDecimal currentVolume = bookedProductsDto.getDeliveryVolume();
+            BigDecimal addVolume = dimension.getHeight()
+                    .multiply(dimension.getWidth())
+                    .multiply(dimension.getDepth());
+            BigDecimal newVolume = currentVolume.add(addVolume).setScale(3, RoundingMode.UP);
             bookedProductsDto.setDeliveryVolume(newVolume);
 
             // Вес
-            Double currentWeight = bookedProductsDto.getDeliveryWeight();
-            Double addWeight = product.getWeight() * wantedCount;
-            Double newWeight = currentWeight + addWeight;
+            BigDecimal currentWeight = bookedProductsDto.getDeliveryWeight();
+            BigDecimal addWeight = product.getWeight().multiply(BigDecimal.valueOf(wantedCount));
+            BigDecimal newWeight = currentWeight.add(addWeight).setScale(3, RoundingMode.UP);
             bookedProductsDto.setDeliveryWeight(newWeight);
 
             // Признак хрупкости, если хотя бы 1 товар хрупкий, заказ считается хрупким

@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 /**
@@ -36,14 +37,14 @@ public class Dimension {
     UUID id;
 
     // Ширина
-    @Column(name = "width")
-    Double width;
+    @Column(name = "width", scale = 3, precision = 10)
+    BigDecimal width;
 
     // Высота
-    @Column(name = "height")
-    Double height;
+    @Column(name = "height", scale = 3, precision = 10)
+    BigDecimal height;
 
     // Глубина
-    @Column(name = "depth")
-    Double depth;
+    @Column(name = "depth", scale = 3, precision = 10)
+    BigDecimal depth;
 }

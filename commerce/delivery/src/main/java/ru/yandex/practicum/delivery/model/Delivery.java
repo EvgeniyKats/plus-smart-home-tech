@@ -8,6 +8,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -35,7 +36,8 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 // JPA annotations
 @Entity
-@Table(name = "delivery")
+@Table(name = "delivery",
+        indexes = @Index(name = "idx_order_id", columnList = "order_id"))
 public class Delivery {
 
     // Идентификатор доставки.

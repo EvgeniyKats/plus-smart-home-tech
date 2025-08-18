@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 /**
@@ -48,8 +49,8 @@ public class Product {
     Dimension dimension;
 
     // Вес товара
-    @Column(name = "weight")
-    Double weight;
+    @Column(name = "weight", scale = 3, precision = 10)
+    BigDecimal weight;
 
     // Количество товара на складе
     @Column(name = "quantity")

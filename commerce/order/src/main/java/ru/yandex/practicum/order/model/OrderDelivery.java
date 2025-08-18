@@ -33,12 +33,12 @@ public class OrderDelivery {
     UUID deliveryId;
 
     // Общий вес доставки.
-    @Column(name = "delivery_weight")
-    Double deliveryWeight;
+    @Column(name = "delivery_weight", scale = 3, precision = 10)
+    BigDecimal deliveryWeight;
 
     // Общий объём доставки.
-    @Column(name = "delivery_volume")
-    Double deliveryVolume;
+    @Column(name = "delivery_volume", scale = 3, precision = 10)
+    BigDecimal deliveryVolume;
 
     // Признак хрупкости заказа.
     @Column(name = "fragile")

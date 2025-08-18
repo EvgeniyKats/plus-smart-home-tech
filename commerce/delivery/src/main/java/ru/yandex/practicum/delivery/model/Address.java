@@ -29,7 +29,7 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 // JPA annotations
 @Entity
-@Table(name = "address")
+@Table(name = "delivery_address")
 public class Address {
 
     // Идентификатор адреса.

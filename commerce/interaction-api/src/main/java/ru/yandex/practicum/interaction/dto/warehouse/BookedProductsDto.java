@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
+
 /**
  * Общие сведения о зарезервированных товарах по корзине.
  */
@@ -16,11 +18,11 @@ import lombok.experimental.FieldDefaults;
 public class BookedProductsDto {
     // Общий вес доставки
     @NotNull
-    Double deliveryWeight;
+    BigDecimal deliveryWeight;
 
     // Общий объём доставки
     @NotNull
-    Double deliveryVolume;
+    BigDecimal deliveryVolume;
 
     // Есть ли хрупкие вещи в доставке
     @NotNull

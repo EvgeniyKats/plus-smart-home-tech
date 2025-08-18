@@ -38,10 +38,10 @@ public class OrderDto {
     OrderState state;
 
     // Общий вес доставки.
-    Double deliveryWeight;
+    BigDecimal deliveryWeight;
 
     // Общий объём доставки.
-    Double deliveryVolume;
+    BigDecimal deliveryVolume;
 
     // Признак хрупкости заказа.
     Boolean fragile;
