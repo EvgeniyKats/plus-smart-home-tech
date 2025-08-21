@@ -53,10 +53,10 @@ public class Order {
     UUID paymentId;
 
     @Embedded
-    OrderDelivery delivery;
+    OrderDeliveryDetails deliveryDetails;
 
     @Embedded
-    OrderProducts products;
+    OrderProductsDetails productsDetails;
 
     // Общая стоимость.
     @Column(name = "total_price", precision = 19, scale = 2)

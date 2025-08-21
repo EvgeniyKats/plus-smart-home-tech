@@ -22,4 +22,10 @@ public interface PaymentService {
 
     // Метод для эмуляции отказа в оплате платежного шлюза.
     void setPaymentFailed(UUID paymentId);
+
+    // Метод для эмуляции отмены заявки на оплату.
+    void setPaymentCanceled(UUID paymentId);
+
+    // Метод для эмуляции возврата оплаты.
+    void returnPayment(UUID paymentId);
 }

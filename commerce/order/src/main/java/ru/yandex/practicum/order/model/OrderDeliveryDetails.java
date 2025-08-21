@@ -26,7 +26,7 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 // JPA annotations
 @Embeddable
-public class OrderDelivery {
+public class OrderDeliveryDetails {
 
     // Идентификатор доставки.
     @Column(name = "delivery_id")

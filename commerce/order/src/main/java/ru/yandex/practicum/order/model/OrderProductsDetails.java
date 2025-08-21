@@ -32,7 +32,7 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 // JPA annotations
 @Embeddable
-public class OrderProducts {
+public class OrderProductsDetails {
 
     // Стоимость товаров в заказе.
     @Column(name = "product_price", precision = 19, scale = 2)

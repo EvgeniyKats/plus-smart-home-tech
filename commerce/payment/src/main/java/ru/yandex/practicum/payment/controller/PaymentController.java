@@ -31,28 +31,40 @@ public class PaymentController implements PaymentApi {
     // Расчёт полной стоимости заказа.
     @Override
     @Logging
-    public BigDecimal getTotalCost(OrderDto orderDto) {
+    public BigDecimal calculateTotalCost(OrderDto orderDto) {
         return paymentService.getTotalCost(orderDto);
     }
 
     // Метод для эмуляции успешной оплаты в платежном шлюзе.
     @Override
     @Logging
-    public void setPaymentSuccess(UUID paymentId) {
+    public void success(UUID paymentId) {
         paymentService.setPaymentSuccess(paymentId);
     }
 
     // Расчёт стоимости товаров в заказе.
     @Override
     @Logging
-    public BigDecimal getProductCost(OrderDto orderDto) {
+    public BigDecimal calculateProductCost(OrderDto orderDto) {
         return paymentService.getProductCost(orderDto);
     }
 
     // Метод для эмуляции отказа в оплате платежного шлюза.
     @Override
     @Logging
-    public void setPaymentFailed(UUID paymentId) {
+    public void failed(UUID paymentId) {
         paymentService.setPaymentFailed(paymentId);
+    }
+
+    @Override
+    @Logging
+    public void cancel(UUID paymentId) {
+        paymentService.setPaymentCanceled(paymentId);
+    }
+
+    @Override
+    @Logging
+    public void returnPayment(UUID paymentId) {
+        paymentService.returnPayment(paymentId);
     }
 }

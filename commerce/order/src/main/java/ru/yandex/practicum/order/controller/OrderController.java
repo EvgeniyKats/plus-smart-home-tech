@@ -31,8 +31,14 @@ public class OrderController implements OrderApi {
 
     @Override
     @Logging
-    public OrderDto createNewOrder(CreateNewOrderRequest createNewOrderRequest) {
-        return orderService.createNewOrder(createNewOrderRequest);
+    public OrderDto createOrder(CreateNewOrderRequest createNewOrderRequest) {
+        return orderService.createOrder(createNewOrderRequest);
+    }
+
+    @Override
+    @Logging
+    public OrderDto cancelOrder(UUID orderId) {
+        return orderService.cancelOrder(orderId);
     }
 
     @Override
@@ -43,61 +49,72 @@ public class OrderController implements OrderApi {
 
     @Override
     @Logging
-    public OrderDto setPaymentSuccess(UUID orderId) {
-        return orderService.setPaymentSuccess(orderId);
+    public OrderDto payment(UUID orderId) {
+        return orderService.payment(orderId);
     }
 
     @Override
     @Logging
-    public OrderDto setPaymentFailed(UUID orderId) {
-        return orderService.setPaymentFailed(orderId);
+    public OrderDto setStatusPaymentSuccess(UUID orderId) {
+        return orderService.setStatusPaymentSuccess(orderId);
     }
 
     @Override
     @Logging
-    public OrderDto setDeliverySuccess(UUID orderId) {
-        return orderService.setDeliverySuccess(orderId);
+    public OrderDto setStatusPaymentFailed(UUID orderId) {
+        return orderService.setStatusPaymentFailed(orderId);
+    }
+
+    @Override
+    public OrderDto setStatusOnPickup(UUID orderId) {
+        return orderService.setStatusOnPickup(orderId);
     }
 
     @Override
     @Logging
-    public OrderDto setDeliveryFailed(UUID orderId) {
-        return orderService.setDeliveryFailed(orderId);
+    public OrderDto setStatusDone(UUID orderId) {
+        return orderService.setStatusDone(orderId);
     }
 
     @Override
     @Logging
-    public OrderDto setDeliveryDone(UUID orderId) {
-        return null;
+    public OrderDto setStatusDeliveryFailed(UUID orderId) {
+        return orderService.setStatusDeliveryFailed(orderId);
     }
 
     @Override
     @Logging
-    public OrderDto setOrderCompleted(UUID orderId) {
-        return orderService.setOrderCompleted(orderId);
+    public OrderDto setStatusOnDelivery(UUID orderId) {
+        return orderService.setStatusOnDelivery(orderId);
     }
 
     @Override
     @Logging
-    public OrderDto calculateTotalCost(UUID orderId) {
-        return orderService.calculateTotalCost(orderId);
+    public OrderDto setStatusCompleted(UUID orderId) {
+        return orderService.setStatusCompleted(orderId);
     }
 
     @Override
     @Logging
-    public OrderDto calculateDeliveryCost(UUID orderId) {
-        return orderService.calculateDeliveryCost(orderId);
+    public OrderDto getTotalCost(UUID orderId) {
+        return orderService.getTotalCost(orderId);
     }
 
     @Override
     @Logging
-    public OrderDto setAssemblySuccess(UUID orderId) {
-        return orderService.setAssemblySuccess(orderId);
+    public OrderDto getDeliveryCost(UUID orderId) {
+        return orderService.getDeliveryCost(orderId);
     }
 
     @Override
     @Logging
-    public OrderDto setAssemblyFailed(UUID orderId) {
-        return orderService.setAssemblyFailed(orderId);
+    public OrderDto assembly(UUID orderId) {
+        return orderService.assembly(orderId);
+    }
+
+    @Override
+    @Logging
+    public OrderDto setStatusAssemblyFailed(UUID orderId) {
+        return orderService.setStatusAssemblyFailed(orderId);
     }
 }

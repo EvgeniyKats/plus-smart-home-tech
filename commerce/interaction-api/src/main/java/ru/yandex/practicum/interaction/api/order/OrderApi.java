@@ -22,49 +22,61 @@ public interface OrderApi {
 
     // Создать новый заказ в системе.
     @PutMapping
-    OrderDto createNewOrder(@Valid @RequestBody CreateNewOrderRequest createNewOrderRequest);
+    OrderDto createOrder(@Valid @RequestBody CreateNewOrderRequest createNewOrderRequest);
+
+    // Отменить заказ
+    @PostMapping
+    OrderDto cancelOrder(@RequestBody UUID orderId);
 
     // Возврат заказа.
     @PostMapping("/return")
     OrderDto returnOrder(@Valid @RequestBody ProductReturnRequest productReturnRequest);
 
     // Оплата заказа.
+    @PostMapping("/payment")
+    OrderDto payment(@RequestBody UUID orderId);
+
+    // Оплата заказа успешна.
     @PostMapping("/payment/success")
-    OrderDto setPaymentSuccess(@RequestBody UUID orderId);
+    OrderDto setStatusPaymentSuccess(UUID orderId);
 
     // Оплата заказа произошла с ошибкой.
     @PostMapping("/payment/failed")
-    OrderDto setPaymentFailed(@RequestBody UUID orderId);
+    OrderDto setStatusPaymentFailed(@RequestBody UUID orderId);
 
-    // Доставка заказа произошла успешно до ПВЗ.
-    @PostMapping("/delivery/success")
-    OrderDto setDeliverySuccess(@RequestBody UUID orderId);
+    // Заказ находится в пункте получения
+    @PostMapping("/delivery/pickup")
+    OrderDto setStatusOnPickup(@RequestBody UUID orderId);
 
     // Заказ был получен покупателем из доставки
-    @PostMapping("/delivery/received")
-    OrderDto setDeliveryDone(@RequestBody UUID orderId);
+    @PostMapping("/done")
+    OrderDto setStatusDone(@RequestBody UUID orderId);
 
     // Доставка заказа произошла с ошибкой.
     @PostMapping("/delivery/failed")
-    OrderDto setDeliveryFailed(@RequestBody UUID orderId);
+    OrderDto setStatusDeliveryFailed(@RequestBody UUID orderId);
+
+    // Заказ был принят службой доставки
+    @PostMapping("/delivery/start")
+    OrderDto setStatusOnDelivery(@RequestBody UUID orderId);
 
     // Завершение заказа.
     @PostMapping("/completed")
-    OrderDto setOrderCompleted(@RequestBody UUID orderId);
+    OrderDto setStatusCompleted(@RequestBody UUID orderId);
 
     // Расчёт итоговой стоимости заказа.
     @PostMapping("/calculate/total")
-    OrderDto calculateTotalCost(@RequestBody UUID orderId);
+    OrderDto getTotalCost(@RequestBody UUID orderId);
 
     // Расчёт стоимости доставки заказа.
     @PostMapping("/calculate/delivery")
-    OrderDto calculateDeliveryCost(@RequestBody UUID orderId);
+    OrderDto getDeliveryCost(@RequestBody UUID orderId);
 
     // Сборка заказа.
-    @PostMapping("/assembly/success")
-    OrderDto setAssemblySuccess(@RequestBody UUID orderId);
+    @PostMapping("/assembly")
+    OrderDto assembly(@RequestBody UUID orderId);
 
     // Сборка заказа произошла с ошибкой.
     @PostMapping("/assembly/failed")
-    OrderDto setAssemblyFailed(@RequestBody UUID orderId);
+    OrderDto setStatusAssemblyFailed(@RequestBody UUID orderId);
 }

@@ -14,38 +14,47 @@ public interface OrderService {
     List<OrderDto> getUserOrders(String username, Pageable pageable);
 
     // Создать новый заказ в системе.
-    OrderDto createNewOrder(CreateNewOrderRequest createNewOrderRequest);
+    OrderDto createOrder(CreateNewOrderRequest createNewOrderRequest);
+
+    // Отменить заказ
+    OrderDto cancelOrder(UUID orderId);
 
     // Возврат заказа.
     OrderDto returnOrder(ProductReturnRequest productReturnRequest);
 
     // Оплата заказа.
-    OrderDto setPaymentSuccess(UUID orderId);
+    OrderDto payment(UUID orderId);
+
+    // Оплата заказа успешна.
+    OrderDto setStatusPaymentSuccess(UUID orderId);
 
     // Оплата заказа произошла с ошибкой.
-    OrderDto setPaymentFailed(UUID orderId);
+    OrderDto setStatusPaymentFailed(UUID orderId);
+
+    // Заказ находится в пункте получения
+    OrderDto setStatusOnPickup(UUID orderId);
 
     // Доставка заказа произошла успешно до ПВЗ.
-    OrderDto setDeliverySuccess(UUID orderId);
-
-    // Заказ был получен покупателем из доставки
-    OrderDto setDeliveryDone(UUID orderId);
+    OrderDto setStatusDone(UUID orderId);
 
     // Доставка заказа произошла с ошибкой.
-    OrderDto setDeliveryFailed(UUID orderId);
+    OrderDto setStatusDeliveryFailed(UUID orderId);
+
+    // Заказ был принят службой доставки
+    OrderDto setStatusOnDelivery(UUID orderId);
 
     // Завершение заказа.
-    OrderDto setOrderCompleted(UUID orderId);
+    OrderDto setStatusCompleted(UUID orderId);
 
     // Расчёт итоговой стоимости заказа.
-    OrderDto calculateTotalCost(UUID orderId);
+    OrderDto getTotalCost(UUID orderId);
 
     // Расчёт стоимости доставки заказа.
-    OrderDto calculateDeliveryCost(UUID orderId);
+    OrderDto getDeliveryCost(UUID orderId);
 
     // Сборка заказа.
-    OrderDto setAssemblySuccess(UUID orderId);
+    OrderDto assembly(UUID orderId);
 
     // Сборка заказа произошла с ошибкой.
-    OrderDto setAssemblyFailed(UUID orderId);
+    OrderDto setStatusAssemblyFailed(UUID orderId);
 }

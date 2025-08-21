@@ -132,6 +132,9 @@ public class WarehouseServiceImpl implements WarehouseService {
         UUID deliveryId = shippedToDeliveryRequest.getDeliveryId();
         orderBooking.setDeliveryId(deliveryId);
         log.trace("Сведения о заказе {} успешно обновлены", orderId);
+
+        orderClientFeign.setStatusOnDelivery(orderId);
+        log.trace("Отправлена информация о начале доставки в сервис order");
     }
 
     @Override
@@ -163,7 +166,8 @@ public class WarehouseServiceImpl implements WarehouseService {
         try {
             resultCheck = checkWarehouseProductsQuantity(productsToAssembly);
         } catch (NoSpecifiedProductInWarehouseException | ProductInShoppingCartLowQuantityInWarehouseException e) {
-            orderClientFeign.setAssemblyFailed(orderId);
+            orderClientFeign.setStatusAssemblyFailed(orderId);
+            log.trace("Передан статус failed сборки в сервис order");
             throw e;
         }
 
@@ -177,9 +181,6 @@ public class WarehouseServiceImpl implements WarehouseService {
                 .bookedProducts(productsToAssembly)
                 .build();
         orderBookingRepository.save(orderBooking);
-
-        // устанавливаем статус успешной сборки
-        orderClientFeign.setAssemblySuccess(orderId);
 
         return resultCheck.getBookedProductsDto();
     }

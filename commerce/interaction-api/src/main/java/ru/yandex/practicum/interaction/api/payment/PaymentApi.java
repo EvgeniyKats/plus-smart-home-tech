@@ -17,17 +17,25 @@ public interface PaymentApi {
 
     // Расчёт полной стоимости заказа.
     @PostMapping("/totalCost")
-    BigDecimal getTotalCost(@Valid @RequestBody OrderDto orderDto);
+    BigDecimal calculateTotalCost(@Valid @RequestBody OrderDto orderDto);
 
     // Метод для эмуляции успешной оплаты в платежном шлюзе.
     @PostMapping("/refund")
-    void setPaymentSuccess(@RequestBody UUID paymentId);
+    void success(@RequestBody UUID paymentId);
 
     // Расчёт стоимости товаров в заказе.
     @PostMapping("/productCost")
-    BigDecimal getProductCost(@RequestBody OrderDto orderDto);
+    BigDecimal calculateProductCost(@RequestBody OrderDto orderDto);
 
     // Метод для эмуляции отказа в оплате платежного шлюза.
     @PostMapping("/failed")
-    void setPaymentFailed(@RequestBody UUID paymentId);
+    void failed(@RequestBody UUID paymentId);
+
+    // Метод для эмуляции отмены заявки на оплату.
+    @PostMapping("/cancel")
+    void cancel(@RequestBody UUID paymentId);
+
+    // Метод для эмуляции возврата оплаты.
+    @PostMapping("/return")
+    void returnPayment(@RequestBody UUID paymentId);
 }

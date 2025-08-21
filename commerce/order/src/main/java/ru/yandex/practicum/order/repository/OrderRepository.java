@@ -14,7 +14,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     @Query("""
             SELECT DISTINCT o
             FROM Order o
-            LEFT JOIN FETCH o.products.products
+            LEFT JOIN FETCH o.productsDetails.products
             WHERE o.shoppingCartId IN :cartIds
             """)
     List<Order> findAllByShoppingCartIdWithProducts(@Param("cartIds") List<UUID> cartIds, Pageable pageable);

@@ -12,14 +12,20 @@ public interface DeliveryService {
     DeliveryDto createDelivery(DeliveryDto deliveryDto);
 
     // Расчёт полной стоимости доставки заказа.
-    BigDecimal getCost(OrderDto orderDto);
+    BigDecimal calculateDeliveryCost(OrderDto orderDto);
 
     // Эмуляция получения товара в доставку.
     void picked(UUID orderId);
 
     // Эмуляция успешной доставки товара.
-    void setSuccess(UUID orderId);
+    void success(UUID orderId);
 
-    // Эмуляция неудачного вручения товара.
-    void setFailed(UUID orderId);
+    // Эмуляция неудачной доставки, например товар не вручен или не может быть доставлен.
+    void failed(UUID orderId);
+
+    // Эмуляция отмены доставки товаров.
+    void setStatusCanceled(UUID orderId);
+
+    // Эмуляция успешной доставки товара до пункта выдачи.
+    void onPickup(UUID orderId);
 }

@@ -117,12 +117,10 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(NoOrderFoundException::new);
 
-        changePaymentStateWithCheck(payment, PaymentState.SUCCESS);
+        changePaymentStateWithCheck(payment, Set.of(PaymentState.PENDING), PaymentState.SUCCESS);
 
-        UUID orderId = payment.getOrderId();
-        OrderDto orderDto = orderClientFeign.setPaymentSuccess(orderId);
-
-        log.debug("Установлен PaymentState.SUCCESS, order={}", orderDto);
+        orderClientFeign.payment(payment.getOrderId());
+        log.trace("Передан статус PaymentState.SUCCESS в сервис order");
     }
 
     @Override
@@ -132,12 +130,30 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(NoOrderFoundException::new);
 
-        changePaymentStateWithCheck(payment, PaymentState.FAILED);
+        changePaymentStateWithCheck(payment, Set.of(PaymentState.PENDING), PaymentState.FAILED);
 
-        UUID orderId = payment.getOrderId();
-        OrderDto orderDto = orderClientFeign.setPaymentFailed(orderId);
+        orderClientFeign.setStatusPaymentFailed(payment.getOrderId());
+        log.trace("Передан статус PaymentState.FAILED в сервис order");
+    }
 
-        log.debug("Установлен PaymentState.FAILED, order={}", orderDto);
+    @Override
+    @Transactional
+    @Logging(Level.TRACE)
+    public void setPaymentCanceled(UUID paymentId) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(NoOrderFoundException::new);
+
+        changePaymentStateWithCheck(payment, Set.of(PaymentState.PENDING), PaymentState.CANCELED);
+    }
+
+    @Override
+    @Transactional
+    @Logging(Level.TRACE)
+    public void returnPayment(UUID paymentId) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(NoOrderFoundException::new);
+
+        changePaymentStateWithCheck(payment, Set.of(PaymentState.SUCCESS), PaymentState.RETURNED);
     }
 
     /**
@@ -145,11 +161,11 @@ public class PaymentServiceImpl implements PaymentService {
      *
      * @throws PaymentChangeStateException если текущий статус отличается от PaymentState.PENDING
      */
-    private void changePaymentStateWithCheck(Payment payment, PaymentState newState) {
-        if (!payment.getPaymentState().equals(PaymentState.PENDING)) {
-            throw new PaymentChangeStateException(PaymentState.PENDING, payment.getPaymentState(), newState);
+    @Logging(Level.DEBUG)
+    private void changePaymentStateWithCheck(Payment payment, Set<PaymentState> expected, PaymentState newState) {
+        if (!expected.contains(payment.getPaymentState())) {
+            throw new PaymentChangeStateException(expected, payment.getPaymentState(), newState);
         }
         payment.setPaymentState(newState);
-        log.debug("paymentId = {}, new state = {}", payment.getPaymentId(), newState);
     }
 }

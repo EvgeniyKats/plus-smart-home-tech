@@ -54,7 +54,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     @Logging(Level.TRACE)
-    public BigDecimal getCost(OrderDto orderDto) {
+    public BigDecimal calculateDeliveryCost(OrderDto orderDto) {
         Delivery delivery = deliveryRepository.findById(orderDto.getDeliveryId())
                 .orElseThrow(NoDeliveryFoundException::new);
 
@@ -77,7 +77,6 @@ public class DeliveryServiceImpl implements DeliveryService {
                 .orElseThrow(NoDeliveryFoundException::new);
 
         changeDeliveryStateWithCheck(delivery, Set.of(DeliveryState.CREATED), DeliveryState.IN_PROGRESS);
-        log.trace("Статус успешно изменен на DeliveryState.IN_PROGRESS");
 
         ShippedToDeliveryRequest shippedToDeliveryRequest = ShippedToDeliveryRequest.builder()
                 .orderId(orderId)
@@ -91,31 +90,56 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     @Transactional
     @Logging(Level.TRACE)
-    public void setSuccess(UUID orderId) {
+    public void success(UUID orderId) {
         Delivery delivery = deliveryRepository.findById(orderId)
                 .orElseThrow(NoDeliveryFoundException::new);
 
-        changeDeliveryStateWithCheck(delivery, Set.of(DeliveryState.IN_PROGRESS), DeliveryState.DELIVERED);
-        log.trace("Статус успешно изменен на DeliveryState.DELIVERED");
+        changeDeliveryStateWithCheck(delivery, Set.of(DeliveryState.IN_PROGRESS), DeliveryState.SUCCESS);
 
-        orderClientFeign.setDeliverySuccess(orderId);
+        orderClientFeign.setStatusDone(orderId);
         log.trace("Отправлена информация о успешной доставки в сервис order");
     }
 
     @Override
     @Transactional
     @Logging(Level.TRACE)
-    public void setFailed(UUID orderId) {
+    public void failed(UUID orderId) {
         Delivery delivery = deliveryRepository.findById(orderId)
                 .orElseThrow(NoDeliveryFoundException::new);
 
         changeDeliveryStateWithCheck(delivery,
                 Set.of(DeliveryState.CREATED, DeliveryState.IN_PROGRESS),
                 DeliveryState.FAILED);
-        log.trace("Статус успешно изменен на DeliveryState.FAILED");
 
-        orderClientFeign.setDeliverySuccess(orderId);
+        orderClientFeign.setStatusDeliveryFailed(orderId);
         log.trace("Отправлена информация о неудачной доставке в сервис order");
+    }
+
+    @Override
+    @Transactional
+    @Logging(Level.TRACE)
+    public void setStatusCanceled(UUID orderId) {
+        Delivery delivery = deliveryRepository.findById(orderId)
+                .orElseThrow(NoDeliveryFoundException::new);
+
+        changeDeliveryStateWithCheck(delivery,
+                Set.of(DeliveryState.CREATED, DeliveryState.IN_PROGRESS),
+                DeliveryState.CANCELLED);
+    }
+
+    @Override
+    @Transactional
+    @Logging(Level.TRACE)
+    public void onPickup(UUID orderId) {
+        Delivery delivery = deliveryRepository.findById(orderId)
+                .orElseThrow(NoDeliveryFoundException::new);
+
+        changeDeliveryStateWithCheck(delivery,
+                Set.of(DeliveryState.IN_PROGRESS),
+                DeliveryState.ON_PICKUP);
+
+        orderClientFeign.setStatusOnPickup(orderId);
+        log.trace("Отправлена информация о доставке до ПВЗ в сервис order");
     }
 
     /**
@@ -123,6 +147,7 @@ public class DeliveryServiceImpl implements DeliveryService {
      *
      * @throws DeliveryChangeStateException если текущий статус отличается от ожидаемого
      */
+    @Logging(Level.DEBUG)
     private void changeDeliveryStateWithCheck(Delivery delivery,
                                               Set<DeliveryState> expectedStates,
                                               DeliveryState newState) {

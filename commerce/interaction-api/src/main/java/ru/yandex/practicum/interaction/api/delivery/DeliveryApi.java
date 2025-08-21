@@ -18,7 +18,7 @@ public interface DeliveryApi {
 
     // Расчёт полной стоимости доставки заказа.
     @PostMapping("/cost")
-    BigDecimal getCost(@Valid @RequestBody OrderDto orderDto);
+    BigDecimal calculateDeliveryCost(@Valid @RequestBody OrderDto orderDto);
 
     // Эмуляция получения товара в доставку.
     @PostMapping("/picked")
@@ -26,9 +26,18 @@ public interface DeliveryApi {
 
     // Эмуляция успешной доставки товара.
     @PostMapping("/successful")
-    void setSuccess(@RequestBody UUID orderId);
+    void success(@RequestBody UUID orderId);
 
-    // Эмуляция неудачного вручения товара.
+    // Эмуляция успешной доставки товара до пункта выдачи.
+    @PostMapping("/pickup")
+    void onPickup(@RequestBody UUID orderId);
+
+    // Эмуляция отмены доставки товаров.
+    @PostMapping("/cancel")
+    void setStatusCanceled(@RequestBody UUID orderId);
+
+    // Эмуляция неудачной доставки, например товар не вручен или не может быть доставлен.
     @PostMapping("/failed")
-    void setFailed(@RequestBody UUID orderId);
+    void failed(@RequestBody UUID orderId);
+
 }

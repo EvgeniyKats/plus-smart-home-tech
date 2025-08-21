@@ -28,8 +28,8 @@ public class DeliveryController implements DeliveryApi {
 
     @Override
     @Logging
-    public BigDecimal getCost(OrderDto orderDto) {
-        return deliveryService.getCost(orderDto);
+    public BigDecimal calculateDeliveryCost(OrderDto orderDto) {
+        return deliveryService.calculateDeliveryCost(orderDto);
     }
 
     @Override
@@ -40,13 +40,24 @@ public class DeliveryController implements DeliveryApi {
 
     @Override
     @Logging
-    public void setSuccess(UUID orderId) {
-        deliveryService.setSuccess(orderId);
+    public void success(UUID orderId) {
+        deliveryService.success(orderId);
     }
 
     @Override
     @Logging
-    public void setFailed(UUID orderId) {
-        deliveryService.setFailed(orderId);
+    public void onPickup(UUID orderId) {
+        deliveryService.onPickup(orderId);
+    }
+
+    @Override
+    public void setStatusCanceled(UUID orderId) {
+        deliveryService.setStatusCanceled(orderId);
+    }
+
+    @Override
+    @Logging
+    public void failed(UUID orderId) {
+        deliveryService.failed(orderId);
     }
 }
