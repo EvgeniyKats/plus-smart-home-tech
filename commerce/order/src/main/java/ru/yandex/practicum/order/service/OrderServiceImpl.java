@@ -1,8 +1,7 @@
 package ru.yandex.practicum.order.service;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,8 +39,8 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class OrderServiceImpl implements OrderService {
-    private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
     private final OrderRepository orderRepository;
 
     private final OrderMapper orderMapper;
@@ -58,8 +57,8 @@ public class OrderServiceImpl implements OrderService {
 
         ShoppingCartDto shoppingCartDto = shoppingCartClientFeign.getShoppingCart(username);
 
-        List<UUID> shoppingCartIds = List.of(shoppingCartDto.getShoppingCartId());
-        List<Order> orders = orderRepository.findAllByShoppingCartIdWithProducts(shoppingCartIds, pageable);
+        UUID cartId = shoppingCartDto.getShoppingCartId();
+        List<Order> orders = orderRepository.findAllByShoppingCartIdWithProducts(cartId, pageable);
 
         return orders.stream()
                 .map(orderMapper::toOrderDto)

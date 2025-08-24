@@ -33,6 +33,5 @@ public class DeliveryDto {
     UUID orderId;
 
     // Статус доставки.
-    @NotNull
     DeliveryState deliveryState;
 }

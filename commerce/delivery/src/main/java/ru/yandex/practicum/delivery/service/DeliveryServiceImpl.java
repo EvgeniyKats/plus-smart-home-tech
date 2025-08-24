@@ -48,6 +48,7 @@ public class DeliveryServiceImpl implements DeliveryService {
                 .toAddress(addressMapper.toAddress(deliveryDto.getToAddress()))
                 .orderId(deliveryDto.getOrderId())
                 .build();
+        deliveryRepository.save(delivery);
 
         return deliveryMapper.toDeliveryDto(delivery);
     }

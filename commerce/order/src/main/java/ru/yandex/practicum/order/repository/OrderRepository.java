@@ -15,10 +15,10 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
             SELECT DISTINCT o
             FROM Order o
             LEFT JOIN FETCH o.productsDetails.products
-            WHERE o.shoppingCartId IN :cartIds
+            WHERE o.shoppingCartId = :cartId
             """)
-    List<Order> findAllByShoppingCartIdWithProducts(@Param("cartIds") List<UUID> cartIds, Pageable pageable);
+    List<Order> findAllByShoppingCartIdWithProducts(@Param("cartId") UUID cartId, Pageable pageable);
 
     // Обеспечивает ленивую выгрузку заказов из БД
-    List<Order> findAllByShoppingCartIdIn(List<UUID> cartIds, Pageable pageable);
+    List<Order> findAllByShoppingCartIdIn(UUID cartId, Pageable pageable);
 }
