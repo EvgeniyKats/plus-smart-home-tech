@@ -11,14 +11,12 @@ import ru.yandex.practicum.interaction.dto.shopping.cart.ChangeProductQuantityRe
 import ru.yandex.practicum.interaction.dto.shopping.cart.ShoppingCartDto;
 import ru.yandex.practicum.interaction.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.interaction.exception.shopping.cart.NoProductsInShoppingCartException;
-import ru.yandex.practicum.interaction.exception.shopping.cart.NotAuthorizedUserException;
 import ru.yandex.practicum.interaction.exception.shopping.cart.ShoppingCartDeactivateException;
 import ru.yandex.practicum.logging.Logging;
 import ru.yandex.practicum.shopping.cart.mapper.ShoppingCartMapper;
 import ru.yandex.practicum.shopping.cart.model.ShoppingCart;
 import ru.yandex.practicum.shopping.cart.model.ShoppingCartStatus;
 import ru.yandex.practicum.shopping.cart.repository.ShoppingCartRepository;
-import ru.yandex.practicum.shopping.cart.util.UsernameValidator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,7 +37,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     @Logging(Level.TRACE)
     public ShoppingCartDto getShoppingCart(String username) {
-        validateUsername(username);
         ShoppingCart shoppingCart = shoppingCartRepository.getOrCreateByUsername(username, true);
 
         return shoppingCartMapper.toShoppingCartDto(shoppingCart);
@@ -49,7 +46,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     @Logging(Level.TRACE)
     public ShoppingCartDto addProductsToShoppingCart(Map<UUID, Long> products, String username) {
-        validateUsername(username);
         ShoppingCart shoppingCart = shoppingCartRepository.getOrCreateByUsername(username, true);
 
         // проверка возможности модификации корзины
@@ -68,7 +64,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     @Logging(Level.TRACE)
     public void deactivateShoppingCart(String username) {
-        validateUsername(username);
         ShoppingCart shoppingCart = shoppingCartRepository.getOrCreateByUsername(username, false);
 
         // деактивация корзины
@@ -79,8 +74,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     @Logging(Level.TRACE)
     public ShoppingCartDto removeProductsFromShoppingCart(List<UUID> productsIds, String username) {
-        validateUsername(username);
-
         ShoppingCart shoppingCart = shoppingCartRepository.getOrCreateByUsername(username, true);
 
         // проверка возможности модификации корзины
@@ -99,8 +92,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     @Logging(Level.TRACE)
     public ShoppingCartDto changeProductsQuantityInShoppingCart(ChangeProductQuantityRequest request, String username) {
-        validateUsername(username);
-
         ShoppingCart shoppingCart = shoppingCartRepository.getOrCreateByUsername(username, true);
 
         // проверка возможности модификации корзины
@@ -117,19 +108,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         shoppingCart.getProducts().put(request.getProductId(), request.getNewQuantity());
 
         return shoppingCartMapper.toShoppingCartDto(shoppingCart);
-    }
-
-    /**
-     * Проверяет, является ли username пустым (или равен null)
-     *
-     * @throws NotAuthorizedUserException, если username пустой
-     */
-    private void validateUsername(String username) {
-        if (!UsernameValidator.isUsernameValid(username)) {
-            log.warn("username={} имя пользователя не должно быть пустым", username);
-            throw new NotAuthorizedUserException();
-        }
-        log.debug("Имя пользователя прошло валидацию username={}", username);
     }
 
     /**

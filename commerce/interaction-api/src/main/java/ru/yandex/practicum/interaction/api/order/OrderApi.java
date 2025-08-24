@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.interaction.dto.order.CreateNewOrderRequest;
 import ru.yandex.practicum.interaction.dto.order.OrderDto;
 import ru.yandex.practicum.interaction.dto.order.ProductReturnRequest;
+import ru.yandex.practicum.interaction.validator.UsernameAuthCheck;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,7 +19,7 @@ public interface OrderApi {
 
     // Получить заказы пользователя.
     @GetMapping
-    List<OrderDto> getUserOrders(@RequestParam String username, Pageable pageable);
+    List<OrderDto> getUserOrders(@RequestParam @UsernameAuthCheck String username, Pageable pageable);
 
     // Создать новый заказ в системе.
     @PutMapping

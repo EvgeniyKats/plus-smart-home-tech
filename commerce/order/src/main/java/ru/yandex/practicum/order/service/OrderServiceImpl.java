@@ -22,7 +22,6 @@ import ru.yandex.practicum.interaction.dto.warehouse.AssemblyProductsForOrderReq
 import ru.yandex.practicum.interaction.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.interaction.exception.order.NoOrderFoundException;
 import ru.yandex.practicum.interaction.exception.order.OrderChangeStateException;
-import ru.yandex.practicum.interaction.exception.shopping.cart.NotAuthorizedUserException;
 import ru.yandex.practicum.logging.Logging;
 import ru.yandex.practicum.order.mapper.OrderMapper;
 import ru.yandex.practicum.order.model.Order;
@@ -53,8 +52,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Logging(Level.TRACE)
     public List<OrderDto> getUserOrders(String username, Pageable pageable) {
-        validateUsername(username);
-
         ShoppingCartDto shoppingCartDto = shoppingCartClientFeign.getShoppingCart(username);
 
         UUID cartId = shoppingCartDto.getShoppingCartId();
@@ -339,13 +336,6 @@ public class OrderServiceImpl implements OrderService {
         changeOrderStateWithCheck(order, Set.of(OrderState.PAID), OrderState.ASSEMBLY_FAILED);
 
         return orderMapper.toOrderDto(order);
-    }
-
-    @Logging
-    private void validateUsername(String username) {
-        if (username == null || username.isBlank()) {
-            throw new NotAuthorizedUserException();
-        }
     }
 
     /**
