@@ -7,5 +7,7 @@ import ru.yandex.practicum.interaction.dto.warehouse.AddressDto;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface AddressMapper {
-    Address toAddress(AddressDto address);
+    Address toAddress(AddressDto addressDto);
+
+    AddressDto toAddressDto(Address address);
 }

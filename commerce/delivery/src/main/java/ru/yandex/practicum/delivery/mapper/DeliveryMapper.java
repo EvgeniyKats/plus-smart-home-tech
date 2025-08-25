@@ -8,4 +8,6 @@ import ru.yandex.practicum.interaction.dto.delivery.DeliveryDto;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface DeliveryMapper {
     DeliveryDto toDeliveryDto(Delivery delivery);
+
+    Delivery toDelivery(DeliveryDto deliveryDto);
 }

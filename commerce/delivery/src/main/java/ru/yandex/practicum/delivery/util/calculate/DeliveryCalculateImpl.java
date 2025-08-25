@@ -1,6 +1,5 @@
 package ru.yandex.practicum.delivery.util.calculate;
 
-import lombok.RequiredArgsConstructor;
 import org.slf4j.event.Level;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
@@ -13,13 +12,16 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 @Component
-@RequiredArgsConstructor
 @Validated
 public class DeliveryCalculateImpl implements DeliveryCalculate {
     private static final String ADDRESS_1 = "ADDRESS_1";
     private static final String ADDRESS_2 = "ADDRESS_2";
 
     private final DeliveryConfig.DeliveryValues deliveryValues;
+
+    public DeliveryCalculateImpl(DeliveryConfig deliveryConfig) {
+        deliveryValues = deliveryConfig.getDeliveryValues();
+    }
 
     @Override
     public BigDecimal calculateDeliveryCost(CalculateDeliveryCostParam param) {
