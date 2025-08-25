@@ -66,7 +66,7 @@ public class LoggingAspect {
     }
 
     private String createEndMessage(Signature signature, Object arg) {
-        return String.format("%s: << %s", signature, arg.toString());
+        return String.format("%s: << %s", signature, arg);
     }
 
     private void writeToLog(String msg, final Level level) {

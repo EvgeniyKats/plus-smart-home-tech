@@ -26,35 +26,35 @@ public class DeliveryFallback implements DeliveryClientFeign {
     }
 
     @Override
-    public void picked(UUID orderId) {
+    public void picked(UUID deliveryId) {
         DeliveryFallbackException cause = new DeliveryFallbackException();
         log.error(cause.getMessage(), cause);
         throw cause;
     }
 
     @Override
-    public void success(UUID orderId) {
+    public void success(UUID deliveryId) {
         DeliveryFallbackException cause = new DeliveryFallbackException();
         log.error(cause.getMessage(), cause);
         throw cause;
     }
 
     @Override
-    public void onPickup(UUID orderId) {
+    public void onPickup(UUID deliveryId) {
         DeliveryFallbackException cause = new DeliveryFallbackException();
         log.error(cause.getMessage(), cause);
         throw cause;
     }
 
     @Override
-    public void setStatusCanceled(UUID orderId) {
+    public void setStatusCanceled(UUID deliveryId) {
         DeliveryFallbackException cause = new DeliveryFallbackException();
         log.error(cause.getMessage(), cause);
         throw cause;
     }
 
     @Override
-    public void failed(UUID orderId) {
+    public void failed(UUID deliveryId) {
         DeliveryFallbackException cause = new DeliveryFallbackException();
         log.error(cause.getMessage(), cause);
         throw cause;

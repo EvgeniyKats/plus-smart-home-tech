@@ -34,30 +34,30 @@ public class DeliveryController implements DeliveryApi {
 
     @Override
     @Logging
-    public void picked(UUID orderId) {
-        deliveryService.picked(orderId);
+    public void picked(UUID deliveryId) {
+        deliveryService.picked(deliveryId);
     }
 
     @Override
     @Logging
-    public void success(UUID orderId) {
-        deliveryService.success(orderId);
+    public void success(UUID deliveryId) {
+        deliveryService.success(deliveryId);
     }
 
     @Override
     @Logging
-    public void onPickup(UUID orderId) {
-        deliveryService.onPickup(orderId);
+    public void onPickup(UUID deliveryId) {
+        deliveryService.onPickup(deliveryId);
     }
 
     @Override
-    public void setStatusCanceled(UUID orderId) {
-        deliveryService.setStatusCanceled(orderId);
+    public void setStatusCanceled(UUID deliveryId) {
+        deliveryService.setStatusCanceled(deliveryId);
     }
 
     @Override
     @Logging
-    public void failed(UUID orderId) {
-        deliveryService.failed(orderId);
+    public void failed(UUID deliveryId) {
+        deliveryService.failed(deliveryId);
     }
 }

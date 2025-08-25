@@ -15,17 +15,17 @@ public interface DeliveryService {
     BigDecimal calculateDeliveryCost(OrderDto orderDto);
 
     // Эмуляция получения товара в доставку.
-    void picked(UUID orderId);
+    void picked(UUID deliveryId);
 
     // Эмуляция успешной доставки товара.
-    void success(UUID orderId);
+    void success(UUID deliveryId);
 
     // Эмуляция неудачной доставки, например товар не вручен или не может быть доставлен.
-    void failed(UUID orderId);
+    void failed(UUID deliveryId);
 
     // Эмуляция отмены доставки товаров.
-    void setStatusCanceled(UUID orderId);
+    void setStatusCanceled(UUID deliveryId);
 
     // Эмуляция успешной доставки товара до пункта выдачи.
-    void onPickup(UUID orderId);
+    void onPickup(UUID deliveryId);
 }

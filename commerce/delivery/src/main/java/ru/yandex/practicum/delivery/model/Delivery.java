@@ -63,5 +63,6 @@ public class Delivery {
     // Статус доставки.
     @Column(name = "delivery_state", nullable = false)
     @Enumerated(value = EnumType.STRING)
-    DeliveryState deliveryState;
+    @Builder.Default
+    DeliveryState deliveryState = DeliveryState.CREATED;
 }

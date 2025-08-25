@@ -73,14 +73,14 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     @Transactional
     @Logging(Level.TRACE)
-    public void picked(UUID orderId) {
-        Delivery delivery = deliveryRepository.findById(orderId)
+    public void picked(UUID deliveryId) {
+        Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(NoDeliveryFoundException::new);
 
         changeDeliveryStateWithCheck(delivery, Set.of(DeliveryState.CREATED), DeliveryState.IN_PROGRESS);
 
         ShippedToDeliveryRequest shippedToDeliveryRequest = ShippedToDeliveryRequest.builder()
-                .orderId(orderId)
+                .orderId(delivery.getOrderId())
                 .deliveryId(delivery.getDeliveryId())
                 .build();
 
@@ -91,55 +91,57 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     @Transactional
     @Logging(Level.TRACE)
-    public void success(UUID orderId) {
-        Delivery delivery = deliveryRepository.findById(orderId)
+    public void success(UUID deliveryId) {
+        Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(NoDeliveryFoundException::new);
 
-        changeDeliveryStateWithCheck(delivery, Set.of(DeliveryState.IN_PROGRESS), DeliveryState.SUCCESS);
+        changeDeliveryStateWithCheck(delivery,
+                Set.of(DeliveryState.IN_PROGRESS, DeliveryState.ON_PICKUP),
+                DeliveryState.SUCCESS);
 
-        orderClientFeign.setStatusDone(orderId);
+        orderClientFeign.setStatusDone(delivery.getOrderId());
         log.trace("Отправлена информация о успешной доставки в сервис order");
     }
 
     @Override
     @Transactional
     @Logging(Level.TRACE)
-    public void failed(UUID orderId) {
-        Delivery delivery = deliveryRepository.findById(orderId)
+    public void failed(UUID deliveryId) {
+        Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(NoDeliveryFoundException::new);
 
         changeDeliveryStateWithCheck(delivery,
-                Set.of(DeliveryState.CREATED, DeliveryState.IN_PROGRESS),
+                Set.of(DeliveryState.CREATED, DeliveryState.IN_PROGRESS, DeliveryState.ON_PICKUP),
                 DeliveryState.FAILED);
 
-        orderClientFeign.setStatusDeliveryFailed(orderId);
+        orderClientFeign.setStatusDeliveryFailed(delivery.getOrderId());
         log.trace("Отправлена информация о неудачной доставке в сервис order");
     }
 
     @Override
     @Transactional
     @Logging(Level.TRACE)
-    public void setStatusCanceled(UUID orderId) {
-        Delivery delivery = deliveryRepository.findById(orderId)
+    public void setStatusCanceled(UUID deliveryId) {
+        Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(NoDeliveryFoundException::new);
 
         changeDeliveryStateWithCheck(delivery,
-                Set.of(DeliveryState.CREATED, DeliveryState.IN_PROGRESS),
+                Set.of(DeliveryState.CREATED, DeliveryState.IN_PROGRESS, DeliveryState.ON_PICKUP),
                 DeliveryState.CANCELLED);
     }
 
     @Override
     @Transactional
     @Logging(Level.TRACE)
-    public void onPickup(UUID orderId) {
-        Delivery delivery = deliveryRepository.findById(orderId)
+    public void onPickup(UUID deliveryId) {
+        Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(NoDeliveryFoundException::new);
 
         changeDeliveryStateWithCheck(delivery,
                 Set.of(DeliveryState.IN_PROGRESS),
                 DeliveryState.ON_PICKUP);
 
-        orderClientFeign.setStatusOnPickup(orderId);
+        orderClientFeign.setStatusOnPickup(delivery.getOrderId());
         log.trace("Отправлена информация о доставке до ПВЗ в сервис order");
     }
 

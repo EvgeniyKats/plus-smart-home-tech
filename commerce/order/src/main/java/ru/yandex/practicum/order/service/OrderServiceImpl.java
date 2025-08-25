@@ -128,7 +128,7 @@ public class OrderServiceImpl implements OrderService {
         changeOrderStateWithCheck(order, successStates, OrderState.CANCELED);
 
         // 2. Необходимо отменить доставку
-        deliveryClientFeign.setStatusCanceled(orderId);
+        deliveryClientFeign.setStatusCanceled(order.getDeliveryDetails().getDeliveryId());
         log.trace("Передан статус отмены в службу доставки");
 
         // 3. Если заказ был собран или в доставке, необходимо увеличить количество товаров на складе

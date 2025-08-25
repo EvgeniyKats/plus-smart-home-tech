@@ -22,22 +22,22 @@ public interface DeliveryApi {
 
     // Эмуляция получения товара в доставку.
     @PostMapping("/picked")
-    void picked(@RequestBody UUID orderId);
+    void picked(@RequestBody UUID deliveryId);
 
     // Эмуляция успешной доставки товара.
     @PostMapping("/successful")
-    void success(@RequestBody UUID orderId);
+    void success(@RequestBody UUID deliveryId);
 
     // Эмуляция успешной доставки товара до пункта выдачи.
     @PostMapping("/pickup")
-    void onPickup(@RequestBody UUID orderId);
+    void onPickup(@RequestBody UUID deliveryId);
 
     // Эмуляция отмены доставки товаров.
     @PostMapping("/cancel")
-    void setStatusCanceled(@RequestBody UUID orderId);
+    void setStatusCanceled(@RequestBody UUID deliveryId);
 
     // Эмуляция неудачной доставки, например товар не вручен или не может быть доставлен.
     @PostMapping("/failed")
-    void failed(@RequestBody UUID orderId);
+    void failed(@RequestBody UUID deliveryId);
 
 }
