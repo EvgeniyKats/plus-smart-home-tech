@@ -33,7 +33,7 @@ public interface PaymentApi {
 
     // Метод для эмуляции отмены заявки на оплату.
     @PostMapping("/cancel")
-    void cancel(@RequestBody UUID paymentId);
+    void setStatusCancel(@RequestBody UUID paymentId);
 
     // Метод для эмуляции возврата оплаты.
     @PostMapping("/return")

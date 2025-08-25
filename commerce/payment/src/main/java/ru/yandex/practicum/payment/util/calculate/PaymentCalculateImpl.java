@@ -28,13 +28,17 @@ public class PaymentCalculateImpl implements PaymentCalculate {
                     }
                     return price.multiply(BigDecimal.valueOf(quantity));
                 })
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_DOWN);
     }
 
     @Override
     public BigDecimal calculateTotalCost(CalculateTotalCostParam param) {
         BigDecimal fee = calculateFee(param.getProductsCost(), param.getFeePercent());
-        return param.getProductsCost().add(fee).add(param.getDeliveryCost());
+        return param.getProductsCost()
+                .add(fee)
+                .add(param.getDeliveryCost())
+                .setScale(2, RoundingMode.HALF_DOWN);
     }
 
     @Override

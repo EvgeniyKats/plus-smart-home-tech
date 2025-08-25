@@ -12,19 +12,19 @@ public interface PaymentService {
     PaymentDto createPayment(OrderDto orderDto);
 
     // Расчёт полной стоимости заказа.
-    BigDecimal getTotalCost(OrderDto orderDto);
+    BigDecimal calculateTotalCost(OrderDto orderDto);
 
     // Метод для эмуляции успешной оплаты в платежном шлюзе.
-    void setPaymentSuccess(UUID paymentId);
+    void success(UUID paymentId);
 
     // Расчёт стоимости товаров в заказе.
-    BigDecimal getProductCost(OrderDto orderDto);
+    BigDecimal calculateProductCost(OrderDto orderDto);
 
     // Метод для эмуляции отказа в оплате платежного шлюза.
-    void setPaymentFailed(UUID paymentId);
+    void failed(UUID paymentId);
 
     // Метод для эмуляции отмены заявки на оплату.
-    void setPaymentCanceled(UUID paymentId);
+    void setStatusCancel(UUID paymentId);
 
     // Метод для эмуляции возврата оплаты.
     void returnPayment(UUID paymentId);

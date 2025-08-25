@@ -72,7 +72,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Logging(Level.TRACE)
-    public BigDecimal getTotalCost(OrderDto orderDto) {
+    public BigDecimal calculateTotalCost(OrderDto orderDto) {
         if (orderDto.getProductPrice() == null) {
             throw new NotEnoughInfoInOrderToCalculateException("Стоимость товаров не определена");
         }
@@ -93,7 +93,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Logging(Level.TRACE)
-    public BigDecimal getProductCost(OrderDto orderDto) {
+    public BigDecimal calculateProductCost(OrderDto orderDto) {
         if (orderDto.getProducts().keySet().isEmpty()) {
             throw new NotEnoughInfoInOrderToCalculateException("Нет товаров для расчёта цен");
         }
@@ -113,20 +113,20 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     @Logging(Level.TRACE)
-    public void setPaymentSuccess(UUID paymentId) {
+    public void success(UUID paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(NoOrderFoundException::new);
 
         changePaymentStateWithCheck(payment, Set.of(PaymentState.PENDING), PaymentState.SUCCESS);
 
-        orderClientFeign.payment(payment.getOrderId());
+        orderClientFeign.setStatusPaymentSuccess(payment.getOrderId());
         log.trace("Передан статус PaymentState.SUCCESS в сервис order");
     }
 
     @Override
     @Transactional
     @Logging(Level.TRACE)
-    public void setPaymentFailed(UUID paymentId) {
+    public void failed(UUID paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(NoOrderFoundException::new);
 
@@ -139,7 +139,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     @Logging(Level.TRACE)
-    public void setPaymentCanceled(UUID paymentId) {
+    public void setStatusCancel(UUID paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(NoOrderFoundException::new);
 

@@ -149,7 +149,7 @@ public class OrderServiceImpl implements OrderService {
 
         // 5. Если заказ в процессе оплаты, необходимо отменить заявку на оплату
         if (oldState.equals(OrderState.ON_PAYMENT)) {
-            paymentClientFeign.cancel(order.getPaymentId());
+            paymentClientFeign.setStatusCancel(order.getPaymentId());
             log.trace("Отменена заявка на оплату в платёжном шлюзе");
         }
 

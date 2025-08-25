@@ -47,7 +47,7 @@ public class PaymentFallback implements PaymentClientFeign {
     }
 
     @Override
-    public void cancel(UUID paymentId) {
+    public void setStatusCancel(UUID paymentId) {
         PaymentFallbackException cause = new PaymentFallbackException();
         log.error(cause.getMessage(), cause);
         throw cause;

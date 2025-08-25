@@ -22,6 +22,7 @@ import ru.yandex.practicum.interaction.dto.shopping.cart.ShoppingCartDto;
 import ru.yandex.practicum.interaction.dto.warehouse.AddressDto;
 import ru.yandex.practicum.interaction.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.order.model.Order;
+import ru.yandex.practicum.order.model.OrderDeliveryDetails;
 import ru.yandex.practicum.order.model.OrderProductsDetails;
 import ru.yandex.practicum.order.repository.OrderRepository;
 
@@ -150,13 +151,13 @@ class OrderServiceTest {
         orderService.cancelOrder(order.getOrderId());
 
         Mockito.verify(deliveryClientFeign, times(1))
-                .setStatusCanceled(order.getOrderId());
+                .setStatusCanceled(order.getDeliveryDetails().getDeliveryId());
         Mockito.verify(warehouseClientFeign, times(1))
                 .returnProducts(order.getProductsDetails().getProducts());
         Mockito.verify(paymentClientFeign, times(1))
                 .returnPayment(order.getPaymentId());
         Mockito.verify(paymentClientFeign, times(0))
-                .cancel(order.getPaymentId());
+                .setStatusCancel(order.getPaymentId());
 
         assertEquals(OrderState.CANCELED, order.getState());
     }
@@ -293,6 +294,9 @@ class OrderServiceTest {
         Order order = Order.builder()
                 .productsDetails(OrderProductsDetails.builder()
                         .products(Map.of(UUID.randomUUID(), 1L))
+                        .build())
+                .deliveryDetails(OrderDeliveryDetails.builder()
+                        .deliveryId(UUID.randomUUID())
                         .build())
                 .build();
         orderRepository.save(order);
