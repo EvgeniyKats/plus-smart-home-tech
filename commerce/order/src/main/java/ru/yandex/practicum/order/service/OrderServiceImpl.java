@@ -275,7 +275,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(NoOrderFoundException::new);
 
-        changeOrderStateWithCheck(order, Set.of(OrderState.ON_PICKUP), OrderState.COMPLETED);
+        changeOrderStateWithCheck(order, Set.of(OrderState.ON_DELIVERY, OrderState.ON_PICKUP), OrderState.COMPLETED);
 
         return orderMapper.toOrderDto(order);
     }

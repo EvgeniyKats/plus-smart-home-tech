@@ -20,5 +20,5 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     List<Order> findAllByShoppingCartIdWithProducts(@Param("cartId") UUID cartId, Pageable pageable);
 
     // Обеспечивает ленивую выгрузку заказов из БД
-    List<Order> findAllByShoppingCartIdIn(UUID cartId, Pageable pageable);
+    List<Order> findAllByShoppingCartId(UUID cartId, Pageable pageable);
 }

@@ -35,7 +35,7 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 // JPA annotations
 @Entity
-@Table(name = "order")
+@Table(name = "orders")
 public class Order {
 
     // Идентификатор заказа.
@@ -53,10 +53,12 @@ public class Order {
     UUID paymentId;
 
     @Embedded
-    OrderDeliveryDetails deliveryDetails;
+    @Builder.Default
+    OrderDeliveryDetails deliveryDetails = new OrderDeliveryDetails();
 
     @Embedded
-    OrderProductsDetails productsDetails;
+    @Builder.Default
+    OrderProductsDetails productsDetails = new OrderProductsDetails();
 
     // Общая стоимость.
     @Column(name = "total_price", precision = 19, scale = 2)
