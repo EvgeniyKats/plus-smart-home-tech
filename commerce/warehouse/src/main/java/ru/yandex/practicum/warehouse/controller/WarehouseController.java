@@ -2,6 +2,7 @@ package ru.yandex.practicum.warehouse.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -72,6 +73,7 @@ public class WarehouseController implements WarehouseApi {
     // Предоставить адрес склада для расчёта доставки.
     @Override
     @Logging
+    @Cacheable("address")
     public AddressDto getAddress() {
         return warehouseService.getAddress();
     }

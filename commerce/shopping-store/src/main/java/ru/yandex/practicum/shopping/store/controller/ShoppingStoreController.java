@@ -34,6 +34,7 @@ public class ShoppingStoreController implements ShoppingStoreApi {
     }
 
     @Override
+    @Logging
     public Map<UUID, BigDecimal> getProductsPrice(Collection<UUID> productIds) {
         return shoppingStoreService.getProductsPrice(productIds);
     }
