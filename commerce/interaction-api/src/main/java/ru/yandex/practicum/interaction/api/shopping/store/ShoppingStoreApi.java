@@ -24,7 +24,7 @@ public interface ShoppingStoreApi {
     ProductPageDto getProductsByCategory(@RequestParam ProductCategory category, Pageable pageable);
 
     // Получение отображения идентификатора товара на его цену
-    @GetMapping
+    @GetMapping("/products")
     Map<UUID, BigDecimal> getProductsPrice(@RequestBody Collection<UUID> productIds);
 
     // Создание нового товара в ассортименте
