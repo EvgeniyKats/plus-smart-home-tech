@@ -19,6 +19,7 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderDto {
     // Идентификатор заказа.
+    @NotNull
     UUID orderId;
 
     // Идентификатор корзины.
