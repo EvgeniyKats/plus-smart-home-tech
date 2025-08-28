@@ -17,6 +17,7 @@ import ru.yandex.practicum.interaction.dto.delivery.DeliveryDto;
 import ru.yandex.practicum.interaction.dto.delivery.DeliveryState;
 import ru.yandex.practicum.interaction.dto.order.OrderDto;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,6 +34,9 @@ class DeliveryServiceTest {
 
     @Autowired
     DeliveryRepository deliveryRepository;
+
+    @Autowired
+    AddressRepository addressRepository;
 
     @Autowired
     AddressMapper addressMapper;
@@ -60,6 +64,30 @@ class DeliveryServiceTest {
 
         Delivery delivery = deliveryRepository.findById(ans.getDeliveryId()).orElse(null);
         assertNotNull(delivery);
+    }
+
+    @Test
+    void shouldCreateTwoDeliveriesForOneAddress() {
+        DeliveryDto deliveryDto = DeliveryDto.builder()
+                .fromAddress(addressMapper.toAddressDto(createTestFromAddress()))
+                .toAddress(addressMapper.toAddressDto(createTestToAddress()))
+                .orderId(UUID.randomUUID())
+                .build();
+
+        deliveryService.createDelivery(deliveryDto);
+        deliveryService.createDelivery(deliveryDto);
+
+        int countDeliveries = deliveryRepository.findAll().size();
+        assertEquals(2, countDeliveries);
+
+        List<Address> addresses = addressRepository.findAll();
+        assertEquals(2, addresses.size());
+        Address a1 = addresses.get(0);
+        assertEquals(2, Math.max(a1.getDeliveriesFrom().size(), a1.getDeliveriesTo().size()));
+
+        Address a2 = addresses.get(1);
+        assertEquals(2, Math.max(a2.getDeliveriesFrom().size(), a2.getDeliveriesTo().size()));
+
     }
 
     @Test

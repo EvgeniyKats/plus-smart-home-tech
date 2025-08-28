@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,6 +16,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -29,7 +33,10 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 // JPA annotations
 @Entity
-@Table(name = "delivery_address")
+@Table(name = "delivery_address",
+        indexes = @Index(name = "idx_address_all_fields",
+                columnList = "country, city, street, house, flat",
+                unique = true))
 public class Address {
 
     // Идентификатор адреса.
@@ -57,4 +64,12 @@ public class Address {
     // Квартира
     @Column(name = "flat", nullable = false)
     String flat;
+
+    @OneToMany(mappedBy = "fromAddress")
+    @Builder.Default
+    Set<Delivery> deliveriesFrom = new HashSet<>();
+
+    @OneToMany(mappedBy = "toAddress")
+    @Builder.Default
+    Set<Delivery> deliveriesTo = new HashSet<>();
 }

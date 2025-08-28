@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.delivery.mapper.AddressMapper;
 import ru.yandex.practicum.delivery.mapper.DeliveryMapper;
+import ru.yandex.practicum.delivery.model.Address;
 import ru.yandex.practicum.delivery.model.Delivery;
 import ru.yandex.practicum.delivery.repository.DeliveryRepository;
 import ru.yandex.practicum.delivery.util.calculate.DeliveryCalculate;
@@ -16,6 +16,7 @@ import ru.yandex.practicum.interaction.client.feign.warehouse.WarehouseClientFei
 import ru.yandex.practicum.interaction.dto.delivery.DeliveryDto;
 import ru.yandex.practicum.interaction.dto.delivery.DeliveryState;
 import ru.yandex.practicum.interaction.dto.order.OrderDto;
+import ru.yandex.practicum.interaction.dto.warehouse.AddressDto;
 import ru.yandex.practicum.interaction.dto.warehouse.ShippedToDeliveryRequest;
 import ru.yandex.practicum.interaction.exception.delivery.DeliveryChangeStateException;
 import ru.yandex.practicum.interaction.exception.delivery.NoDeliveryFoundException;
@@ -31,10 +32,10 @@ import java.util.UUID;
 @Slf4j
 public class DeliveryServiceImpl implements DeliveryService {
     private final DeliveryRepository deliveryRepository;
+    private final AddressRepository addressRepository;
     private final DeliveryCalculate deliveryCalculate;
 
     private final DeliveryMapper deliveryMapper;
-    private final AddressMapper addressMapper;
 
     private final OrderClientFeign orderClientFeign;
     private final WarehouseClientFeign warehouseClientFeign;
@@ -43,13 +44,32 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Transactional
     @Logging(Level.TRACE)
     public DeliveryDto createDelivery(DeliveryDto deliveryDto) {
+        AddressDto fromAddressDto = deliveryDto.getFromAddress();
+        Address fromAddress = addressRepository.findOrCreateByAllFields(
+                fromAddressDto.getCountry(),
+                fromAddressDto.getCity(),
+                fromAddressDto.getStreet(),
+                fromAddressDto.getHouse(),
+                fromAddressDto.getFlat());
+
+        AddressDto toAddressDto = deliveryDto.getToAddress();
+        Address toAddress = addressRepository.findOrCreateByAllFields(
+                toAddressDto.getCountry(),
+                toAddressDto.getCity(),
+                toAddressDto.getStreet(),
+                toAddressDto.getHouse(),
+                toAddressDto.getFlat());
+
         Delivery delivery = Delivery.builder()
-                .fromAddress(addressMapper.toAddress(deliveryDto.getFromAddress()))
-                .toAddress(addressMapper.toAddress(deliveryDto.getToAddress()))
+                .fromAddress(fromAddress)
+                .toAddress(toAddress)
                 .orderId(deliveryDto.getOrderId())
                 .build();
-        deliveryRepository.save(delivery);
 
+        fromAddress.getDeliveriesFrom().add(delivery);
+        toAddress.getDeliveriesTo().add(delivery);
+
+        deliveryRepository.save(delivery);
         return deliveryMapper.toDeliveryDto(delivery);
     }
 

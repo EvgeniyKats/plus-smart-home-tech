@@ -8,9 +8,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -36,8 +35,7 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 // JPA annotations
 @Entity
-@Table(name = "delivery",
-        indexes = @Index(name = "idx_order_id", columnList = "order_id"))
+@Table(name = "delivery")
 public class Delivery {
 
     // Идентификатор доставки.
@@ -47,12 +45,12 @@ public class Delivery {
     UUID deliveryId;
 
     // Адрес отправителя (склад).
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "from_address_id", referencedColumnName = "id", nullable = false)
     Address fromAddress;
 
     // Адрес получателя (пользователя).
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "to_address_id", referencedColumnName = "id", nullable = false)
     Address toAddress;
 
