@@ -9,6 +9,9 @@ import ru.yandex.practicum.interaction.dto.shopping.store.ProductDto;
 import ru.yandex.practicum.interaction.dto.shopping.store.ProductPageDto;
 import ru.yandex.practicum.interaction.dto.shopping.store.QuantityState;
 
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -17,6 +20,13 @@ public class ShoppingStoreFallback implements ShoppingStoreClientFeign {
 
     @Override
     public ProductPageDto getProductsByCategory(ProductCategory category, Pageable pageable) {
+        ShoppingStoreFallbackException cause = new ShoppingStoreFallbackException();
+        log.error(cause.getMessage(), cause);
+        throw cause;
+    }
+
+    @Override
+    public Map<UUID, BigDecimal> getProductsPrice(Collection<UUID> productIds) {
         ShoppingStoreFallbackException cause = new ShoppingStoreFallbackException();
         log.error(cause.getMessage(), cause);
         throw cause;

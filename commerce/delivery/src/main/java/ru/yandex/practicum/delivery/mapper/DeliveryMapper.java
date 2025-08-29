@@ -1,0 +1,13 @@
+package ru.yandex.practicum.delivery.mapper;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
+import ru.yandex.practicum.delivery.model.Delivery;
+import ru.yandex.practicum.interaction.dto.delivery.DeliveryDto;
+
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface DeliveryMapper {
+    DeliveryDto toDeliveryDto(Delivery delivery);
+
+    Delivery toDelivery(DeliveryDto deliveryDto);
+}

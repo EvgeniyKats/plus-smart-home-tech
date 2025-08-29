@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
+
 /**
  * Размеры товара
  */
@@ -18,15 +20,15 @@ public class DimensionDto {
     // Ширина
     @NotNull
     @Min(1)
-    Double width;
+    BigDecimal width;
 
     // Высота
     @NotNull
     @Min(1)
-    Double height;
+    BigDecimal height;
 
     // Глубина
     @NotNull
     @Min(1)
-    Double depth;
+    BigDecimal depth;
 }

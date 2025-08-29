@@ -6,11 +6,17 @@ import ru.yandex.practicum.interaction.dto.shopping.store.ProductDto;
 import ru.yandex.practicum.interaction.dto.shopping.store.ProductPageDto;
 import ru.yandex.practicum.interaction.dto.shopping.store.SetProductQuantityStateRequest;
 
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
 public interface ShoppingStoreService {
     // Получение списка товаров по типу в пагинированном виде
     ProductPageDto getProductsByCategory(ProductCategory category, Pageable pageable);
+
+    // Получение отображения идентификатора товара на его цену
+    Map<UUID, BigDecimal> getProductsPrice(Collection<UUID> productIds);
 
     // Создание нового товара в ассортименте
     ProductDto createProduct(ProductDto productDto);

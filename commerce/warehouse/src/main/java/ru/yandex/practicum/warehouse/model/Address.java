@@ -29,7 +29,7 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 // JPA annotations
 @Entity
-@Table(name = "address")
+@Table(name = "warehouse_address")
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

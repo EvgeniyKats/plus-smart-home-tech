@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 /**
@@ -31,5 +32,5 @@ public class NewProductInWarehouseRequest {
     // Вес товара
     @NotNull
     @Min(1)
-    Double weight;
+    BigDecimal weight;
 }

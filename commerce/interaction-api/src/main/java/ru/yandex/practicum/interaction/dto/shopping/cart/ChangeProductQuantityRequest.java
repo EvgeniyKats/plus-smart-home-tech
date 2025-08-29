@@ -22,5 +22,5 @@ public class ChangeProductQuantityRequest {
 
     // Новое количество товара
     @NotNull
-    Integer newQuantity;
+    Long newQuantity;
 }

@@ -25,7 +25,7 @@ public interface ShoppingCartApi {
     // Добавить товар в корзину
     @PutMapping
     ShoppingCartDto addProductsToShoppingCart(
-            @RequestBody @NotEmpty Map<UUID, @NotNull @Positive Integer> products, // Отображение идентификатора товара на отобранное количество
+            @RequestBody @NotEmpty Map<UUID, @NotNull @Positive Long> products, // Отображение идентификатора товара на отобранное количество
             @RequestParam String username);
 
     // Деактивация корзины товаров для пользователя

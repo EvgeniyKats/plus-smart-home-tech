@@ -61,5 +61,5 @@ public class ShoppingCart {
     @MapKeyColumn(name = "product_id")
     @Column(name = "quantity")
     @Builder.Default
-    Map<UUID, Integer> products = new HashMap<>();
+    Map<UUID, Long> products = new HashMap<>();
 }

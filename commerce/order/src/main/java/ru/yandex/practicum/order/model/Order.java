@@ -1,0 +1,72 @@
+package ru.yandex.practicum.order.model;
+
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
+import ru.yandex.practicum.interaction.dto.order.OrderState;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+
+/**
+ * Представление заказа в БД
+ */
+
+// lombok annotations
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+// JPA annotations
+@Entity
+@Table(name = "orders")
+public class Order {
+
+    // Идентификатор заказа.
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "order_id")
+    UUID orderId;
+
+    // Идентификатор корзины.
+    @Column(name = "shopping_cart_id")
+    UUID shoppingCartId;
+
+    // Идентификатор оплаты.
+    @Column(name = "payment_id")
+    UUID paymentId;
+
+    @Embedded
+    @Builder.Default
+    OrderDeliveryDetails deliveryDetails = new OrderDeliveryDetails();
+
+    @Embedded
+    @Builder.Default
+    OrderProductsDetails productsDetails = new OrderProductsDetails();
+
+    // Общая стоимость.
+    @Column(name = "total_price", precision = 19, scale = 2)
+    BigDecimal totalPrice;
+
+    // Статус заказа.
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "state", nullable = false)
+    @Builder.Default
+    OrderState state = OrderState.NEW;
+}
